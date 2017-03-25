@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>Vixion</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/colors.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body class="ExtraLight">
+  <nav class="void" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Vixion</a>
+      <ul class="right hide-on-med-and-down">
+        <li><a class="waves-effect waves-light" href="#home" onclick="showHome()">Home</a></li>
+        <li><a class="waves-effect waves-light" href="#movies" onclick="showMovies()">Movies</a></li>
+        <li><a class="waves-effect waves-light" href="#series" onclick="showSeries()">Series</a></li>
+        <li><a class="waves-effect waves-light" href="#unknown" onclick="showUnknown()">Unknown Movies & Series</a></li>
+        <li><a class="waves-effect waves-light" href="#settings" onclick="showSettings()">Settings</a></li>
+      </ul>
+
+      <ul id="nav-mobile" class="side-nav">
+        <li><a class="waves-effect waves-light" href="#home" onclick="showHome()">Home</a></li>
+        <li><a class="waves-effect waves-light" href="#movies" onclick="showMovies()">Movies</a></li>        
+        <li><a class="waves-effect waves-light" href="#series" onclick="showSeries()">Series</a></li>
+        <li><a class="waves-effect waves-light" href="#unknown" onclick="showUnknown()">Unknown Movies & Series</a></li>
+        <li><a class="waves-effect waves-light" href="#settings" onclick="showSettings()">Settings</a></li>
+      </ul>
+
+      <ul id="nav-mobile" class="side-nav">
+      </ul>
+      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>  
+  </nav>
+
+      <div style="min-width: 100%; min-height: 1px; background-color: white;"></div>
+	<main class="void" id="screen" style="min-height: 100%;">
+	</main>
+  <footer class="page-footer fuschia">
+    <div class="container ">
+      <div class="row">
+        <div class="col l12 s12">
+          <h5 class="white-text">What is this?</h5>
+          <p class="grey-text text-lighten-4">This interface shows your movies and series located on your nas... or wherever you put the server!</p>
+
+
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      Template by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a> <br />
+      Information series and movies by <a class="orange-text text-lighten-3" href="http://omdbapi.com/">OMDB</a> <br />
+      Github - Vixion:  <a class="orange-text text-lighten-3" href="https://github.com/EldinZenderink">Vixion</a>
+
+      </div>
+    </div>
+  </footer>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/CSWSD.js"></script>  
+  <script src="js/db.js"></script>
+  <script src="js/materialize.js"></script>  
+  <script src="js/settings.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/movies.js"></script>
+  <script src="js/series.js"></script>
+  <script src="js/movie.js"></script>
+  <script src="js/serie.js"></script>
+  <script src="js/unknown.js"></script>
+  <script src="js/init.js"></script>
+
+
+  </body>
+</html>

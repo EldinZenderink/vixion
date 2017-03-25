@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>Vixion</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/colors.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body class="ExtraLight">
+  <nav class="void" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Vixion</a>
+      <ul class="right hide-on-med-and-down">
+        <li><a class="waves-effect waves-light" href="#home" onclick="showHome()">Home</a></li>
+        <li><a class="waves-effect waves-light" href="#movies" onclick="showMovies()">Movies</a></li>
+        <li><a class="waves-effect waves-light" href="#series" onclick="showSeries()">Series</a></li>
+        <li><a class="waves-effect waves-light" href="#unknown" onclick="showUnknown()">Unknown Movies & Series</a></li>
+        <li><a class="waves-effect waves-light" href="#settings" onclick="showSettings()">Settings</a></li>
+      </ul>
+
+      <ul id="nav-mobile" class="side-nav">
+        <li><a class="waves-effect waves-light" href="#home" onclick="showHome()">Home</a></li>
+        <li><a class="waves-effect waves-light" href="#movies" onclick="showMovies()">Movies</a></li>        
+        <li><a class="waves-effect waves-light" href="#series" onclick="showSeries()">Series</a></li>
+        <li><a class="waves-effect waves-light" href="#unknown" onclick="showUnknown()">Unknown Movies & Series</a></li>
+        <li><a class="waves-effect waves-light" href="#settings" onclick="showSettings()">Settings</a></li>
+      </ul>
+
+      <ul id="nav-mobile" class="side-nav">
+      </ul>
+      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>  
+  </nav>
+
+      <div style="min-width: 100%; min-height: 1px; background-color: white;"></div>
+	<main class="void" id="screen" style="min-height: 100%;">
+    <div id="home">
+      <div class="section" id="loader">
+        <div class="row">
+          <div class="preloader-background" id="loading">
+            <div class="preloader-wrapper big active">
+              <div class="spinner-layer spinner-white-only">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div><div class="gap-patch">
+                  <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="row">
+          <center> <h4 id="loadingText">Hello</h4></center>
+        </div>
+      </div>
+      <div id="movies">
+      </div>
+      <div id="series">
+      </div>
+    </div>
+    <div id="movies">      
+      <div class="container">
+       <div class="row">
+          <h3>Movies</h3>
+        </div>
+        <div class="row hide-on-med-and-down" id="movies-posters-desk">          
+        </div>
+        <div class="row hide-on-large-only" id="movies-posters-mob">       
+        </div>
+      </div>
+    </div>
+    <div id="series">
+      <div class="container">
+       <div class="row">
+          <h3>Series</h3>
+        </div>
+        <div class="row hide-on-med-and-down" id="posters-desk">        
+          
+              
+        </div>
+        <div class="row hide-on-large-only " id="posters-mob">        
+         
+
+              
+        </div>
+      </div>
+    </div>
+    <div id="unknown">
+    <div class="container">
+     <div class="row">
+        <h3>Unknown Movies And Series</h3>
+      </div>
+      <div class="row" id="unknownMoviesSeries">       
+      </div>
+    </div>
+    </div>
+
+	</main>
+  <footer class="page-footer fuschia">
+    <div class="container ">
+      <div class="row">
+        <div class="col l12 s12">
+          <h5 class="white-text">What is this?</h5>
+          <p class="grey-text text-lighten-4">This interface shows your movies and series located on your nas... or wherever you put the server!</p>
+
+
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      Template by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a> <br />
+      Information series and movies by <a class="orange-text text-lighten-3" href="http://omdbapi.com/">OMDB</a>
+
+      </div>
+    </div>
+  </footer>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/CSWSD.js"></script>  
+  <script src="js/db.js"></script>
+  <script src="js/materialize.js"></script>  
+  <script src="js/settings.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/movies.js"></script>
+  <script src="js/series.js"></script>
+  <script src="js/movie.js"></script>
+  <script src="js/serie.js"></script>
+  <script src="js/unknown.js"></script>
+  <script src="js/init.js"></script>
+  <script>
+
+/*
+LIBRARY FOR DETECTING LOCAL HOSTED SERVERS
+
+BE AWARE THAT THIS LIBRARY IS DESIGNED TO WORK WITH THE FOLLOWING BROWSERS:  Mozilla, Chrome & Opera AND DEFAULT BROWSERS RUNNING ON THE FOLLOWING OSSES: Android and iOS
+IN CASE YOU WANT TO USE THIS LIBRARY WITH OTHER BROWSERS, YOU NEED TO MANUALLY DEFINE A BASE IP, A EXAMPLE FOR A BASE IP IS GIVEN BELOW:
+
+server ip:  a.x.d.f - client(local) ip: a.x.d.g (or in numbers, server ip: 192.168.65.5 - client ip(local): 192.168.65.132)
+base ip: a.x.d (or in numbers: 192.168.65)
+
+YOU DO NEED JQUERY FOR THIS TO WORK... just in case...
+
+Released under MIT License. Enjoy!
+Eldin Zenderink 02-07-2016
+*/
+
+function ClientSideServerDetection  (){
+  
+  //just some default value
+  var localIpReturned = false;
+  var serversFound = [];
+  var tested = ["test"];
+  var serversFound = [];
+  var portsToCheck = ["80", "8080"];
+  var partials = ["/"];
+  var endAddress = 255;     
+    var startAddress = 1;
+    var timeout = 2000;
+    var baseIp = "0.0.0";
+    var newServerFound = false;
+    var callbackToRun = function(){return;};
+    sessionStorage.serversFound =serversFound;
+  sessionStorage.CSSDFound =false;
+    //some setters
+    this.setPorts= function(portsToCheckInput){
+      portsToCheck = portsToCheckInput;
+    }
+
+    this.setPortRange = function(from, to){
+      portsToCheck = [];
+      for(var x = from; x <= to; x++){
+        console.log("creating port read request for: " + x);
+      }
+    }
+    this.setPartials = function(partialsInput){
+      partials = partialsInput;
+    }
+    this.setStartEnd = function(start, end){
+      startAddress = start;
+    endAddress = end;
+    }
+    this.setTimeOut = function(timeoutInput){
+      timeout = timeoutInput;
+    }
+    this.setBaseIp = function(baseipInput){
+      baseIp = baseipInput;
+    }
+
+    this.getBaseIp   = function(){
+      return baseIp;
+    }
+
+  //starts the procedure to locate and retreive the responding servers on a local network
+  this.runDetection = function(callback){
+    if (!window.WebSocket) alert("WebSocket not supported by this browser");
+    serversFound = [];
+    callbackToRun = callback;
+    //you can only retreive your local ip once, to make it run more often without pager refresh i had to store the base ip.
+    if(baseIp != "0.0.0"){
+      this.runAjaxRequests(baseIp, callbackToRun, portsToCheck, partials, startAddress, endAddress, timeout);
+    } else {
+      this.getLocalIp(this.gotIp, this.runAjaxRequests);        
+    }
+        
+  }
+
+  //callback function for when the local ip has been retreived
+  this.gotIp = function (ip, runAjaxFunction){
+    var ipParts = ip.split('.');
+    baseIp = "";
+    for(var x = 0; x < 3; x++){
+      baseIp =  baseIp + ipParts[x] + ".";
+    }
+    baseIp = baseIp.substr(0, baseIp.length - 1);
+    runAjaxFunction(baseIp, callbackToRun, portsToCheck, partials, startAddress, endAddress, timeout);
+  }
+
+  
+  //we need to get our local ip on our network, your wannabe detected server has to run on the same network with the same base ip as your client
+  //for example, server: a.x.d.f - client: a.x.d.g (or in numbers, server: 192.168.65.5 - client: 192.168.65.132)
+  //local ip detection done by WebRTC stun request, only available on chrome,firefox, opera, android & iOS.
+  //example used: https://github.com/diafygi/webrtc-ips
+  this.getLocalIp = function(callback, runAjaxFunction){
+    //contains every ip found
+    var arrayWithIps = [];
+      //compatibility for firefox and chrome
+      var RTCPeerConnection = window.RTCPeerConnection
+          || window.mozRTCPeerConnection
+          || window.webkitRTCPeerConnection;
+      var useWebKit = !!window.webkitRTCPeerConnection;
+
+      //minimal requirements for data connection
+      var mediaConstraints = {
+          optional: [{RtpDataChannels: true}]
+      };
+
+      var servers = {iceServers: [{urls: "stun:stun.services.mozilla.com"}]};
+
+      //construct a new RTCPeerConnection
+      var pc = new RTCPeerConnection(servers, mediaConstraints);
+
+      function handleCandidate(candidate){
+          //match just the IP address
+          var ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/
+          var ip_addr = ip_regex.exec(candidate)[1];
+          return ip_addr;
+      }
+
+
+      //listen for candidate events
+      pc.onicecandidate = function(ice){
+          //skip non-candidate events
+          if(ice.candidate && !localIpReturned){
+              var ip = handleCandidate(ice.candidate.candidate);
+              arrayWithIps.push(ip);
+              //call callback and return ip, which is in most cases local ip
+              if(arrayWithIps.length > 1){
+                callback(arrayWithIps[0], runAjaxFunction);
+                localIpReturned = true;
+              }
+          }
+      };
+
+
+      //create a bogus data channel
+      pc.createDataChannel("");
+
+      //create an offer sdp
+      pc.createOffer(function(result){
+          //trigger the stun server request
+          pc.setLocalDescription(result, function(){}, function(){});
+
+      }, function(){});
+
+        //read candidate info from local description
+        try{
+
+          var lines = pc.localDescription.sdp.split('\n');
+          lines.forEach(function(line){
+              if(line.indexOf('a=candidate:') === 0){
+                  handleCandidate(line);
+              }
+          });
+        } catch(err){
+          console.log(err);
+        }
+  }
+
+
+  //run the ajax calls for every port, ip between default 1 - 254, or your specific range, and for every partial, you can also make it detect servers which return error response, but it will always exlcude servers which timeout (basically are unreachable, errors mean that the server IS reachable)
+  this.runAjaxRequests = function(baseIp, callback, portsToCheck, partials, startAddress, endAddress, timeout){   
+    //async ajax requests, you can specify timeout and such, be aware that checking multiple ports significantly increases waiting time
+    function ajaxRequest(ip, port, partial, timetotimeout){
+
+      $.when( $.ajax({url: 'http://'+ ip + ":" + port + partial, timeout: timetotimeout})).then(function( data, textStatus, jqXHR) {
+        var serverInfo = {
+          ip: ip,
+          port: port,
+          partial: partial,
+          data: data,
+          type: "HTTP"
+        }       
+        var addIfNotFound = true;
+        $.each(serversFound, function(key, val){
+          if(val.ip == ip && val.port == port){
+            addIfNotFound = false;
+            return;
+          }
+        }); 
+        if(addIfNotFound){
+          serversFound.push(serverInfo);
+        }
+      }, function (xhr, ajaxOptions, thrownError){
+        //console.log(xhr);
+        if(xhr.status > 0){
+          var serverInfo = {
+            ip: ip,
+            port: port,
+            partial: partial,
+            data: xhr,
+            type: "HTTP"
+          }
+          var addIfNotFound = true;
+          $.each(serversFound, function(key, val){
+            if(val.ip == ip && val.port == port){
+              addIfNotFound = false;
+              return;
+            }
+          }); 
+          if(addIfNotFound){
+            serversFound.push(serverInfo);
+          }   
+        } 
+      });
+    }
+
+    
+    function webSocketRequest(ip, port, partial){
+      var ws = new WebSocket("ws://" + ip + ":" + port + partial);
+      var serverInfo = {
+        ip: ip,
+        port: port,
+        partial: partial,
+        data: "",
+        type: "WS"
+      }
+      ws.onopen = function(data){
+        console.log("found connection at: " + ip);
+        serverInfo.ip = ip;
+        serverInfo.port = port;
+        serverInfo.partial = partial;
+        serverInfo.data = data;
+        serverInfo.type = "WS";
+        serversFound.push(serverInfo);  
+
+        sessionStorage.serversFound = JSON.stringify(serversFound);
+        sessionStorage.CSSDFound = true;
+        ws.close()
+      };
+
+      
+    }
+
+    //runs ajax request for every for every port, for every partial and port and for every partial, port and ip
+    for(var b = 0; b < portsToCheck.length; b++){
+      for(var c = 0; c < partials.length; c++){
+        for(var a = startAddress; a < endAddress; a++){
+          //ajaxRequest(baseIp+'.' + a, portsToCheck[b],  partials[c], timeout);
+          webSocketRequest(baseIp + '.' + a, portsToCheck[b], partials[c]);
+        }               
+      }     
+    }   
+  }  
+}
+
+/* DATABASE CONNTECTION STUFF */
+var movies = [];
+var series = [];
+
+var alreadyParsed = [];
+
+var socket;
+function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, callbackOnConnectError){
+  socket = new WebSocket("ws://" + ip + ":4655");
+
+  socket.onopen = function(){
+    console.log("Succesfully connected to websocket :D");
+    getDataFromDB();
+  }
+  socket.onmessage = function(msg){
+    console.log("RECEIVED: ");
+    console.log(msg.data);
+    try{
+      parseData(JSON.parse(msg.data));
+    } catch(err){
+      
+    }
+    if(msg.data == "DONE"){
+      console.log("series");  
+      console.log(series);
+      console.log("movies");  
+      console.log(movies);
+      socket.close();
+      callbackOnDoneReceiving();
+    }
+    callbackOnConnectSucces();
+
+  }
+  socket.onerror = function(err){
+    console.log("Error WS : ");
+    console.log(err);
+    callbackOnConnectError();
+  }
+  
+}
+
+function getDataFromDB(){
+  socket.send("getFiles");
+}
+
+function parseData(files){
+  var info = files.info;
+  if(info.Type == "series"){
+    if(!containsObject(files, series)){
+      series.push(files);
+    }
+  } else {
+    if(!containsObject(files, movies)){
+      movies.push(files);
+    }
+  }
+
+}
+
+function containsObject(obj, list) {
+    var i;
+    for (i = 0; i < list.length; i++) {
+        if (list[i] === obj) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+window.onbeforeunload = function() {
+    socket.onclose = function () {}; // disable onclose handler first
+    socket.close();
+};
+
+/* HOME JS */
+var loadingTextInterval;
+var waitingForDataInterval;
+
+function showHome(){
+
+  
+  clearInterval(loadingTextInterval);
+  clearInterval(waitingForDataInterval);
+  $("#screen").html(' '); 
+  $("#screen").load("home.html"); 
+  
+  $("#loadingText").hide();
+}
+
+
+function checkForData(){
+
+
+  
+
+  if(localStorage.getItem("ServerIP") == null){
+    showSettings();
+  }
+
+  var iteratePostitionLoading = 0;
+  var loadingTextInterval = setInterval(function(){
+    var loadingText = ["Welcome...", "We are currently searching your directories.", "This may take a while, depending on the ammount.", "Please wait."];
+    
+    if(iteratePostitionLoading > (loadingText.length - 1)){
+      iteratePostitionLoading = 0;
+    }
+    $("#loadingText").hide();
+
+
+    $("#loadingText").html(loadingText[iteratePostitionLoading]);
+    
+    $("#loadingText").fadeIn(2500);
+
+    $("#loadingText").fadeOut(2500);
+
+    iteratePostitionLoading++;
+
+
+  }, 5000);
+  var waitingForDataInterval = setInterval(function(){      
+    if(sessionStorage.finishedReceiving == "true"){
+
+      clearInterval(loadingTextInterval);
+      $("#loader").html(' ');   
+      $("#movies").html(' '); 
+      $("#movies").load("movies.html"); 
+      $("#series").html(' '); 
+      $("#series").load("series.html"); 
+
+      clearInterval(waitingForDataInterval);
+    } 
+  }, 500);
+
+
+}
+
+/* MOVIES JS STUFF */
+function showMovies(){
+  console.log("showing movies");
+  $("#screen").html(' '); 
+  $("#screen").load("movies.html");
+
+  //$('#posters-mob').html(htmlCodeMob);
+
+  
+}
+
+function parseMovies(){
+  $(document).ready(function() {
+      
+
+    var htmlCodeDesk = "";
+    var htmlCodeMob = "";
+    $.each(movies, function(index, val){
+      if(val.info.Response == "True"){
+        var imageUrl = val.info.Poster;
+        if(imageUrl.indexOf("http")){
+          imagerUrl = imageUrl.replace("http://ia.media-imdb.com/images/M", "https://images-na.ssl-images-amazon.com/images/M");
+        }
+        var desk = '<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " onclick="showMovie(\'' + index + '\')">\
+                      <img src="' + imageUrl + '" class="posterImage"/>\
+                        <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\
+                    </div>'; 
+        var mob = '<div id="' + index +'" class="row valign-wrapper " onclick="showMovie(\'' + index + '\')"><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div>';
+        htmlCodeDesk = htmlCodeDesk + desk;
+        htmlCodeMob = htmlCodeMob + mob;
+    }
+    }); 
+    $('#movies-posters-desk').append(htmlCodeDesk);
+    $('#movies-posters-mob').append(htmlCodeMob);
+    });
+
+}
+
+/* SERIES JS STUFF */
+function showSeries(){
+
+  $("#screen").html(' '); 
+  $("#screen").load("series.html");
+
+  //$('#posters-mob').html(htmlCodeMob);
+
+  
+}
+
+function parseSeries(){
+  $(document).ready(function() {
+      
+
+    var htmlCodeDesk = "";
+    var htmlCodeMob = "";
+    $.each(series, function(index, val){
+      if(val.info.Response == "True"){
+        var imageUrl = val.info.Poster;
+        if(imageUrl.indexOf("http") >= 0){
+          console.log("FOUND OUTDATED IMAGE LINK :(: " + imageUrl);
+          imageUrl = imageUrl.replace("http://ia.media-imdb.com/images/M", "https://images-na.ssl-images-amazon.com/images/M");
+          console.log("NEW LINK :)" + imageUrl)
+        }
+          var desk = '<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " onclick="showSerie(\'' + index + '\')">\
+                      <img src="' + imageUrl + '" class="posterImage"/>\
+                        <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\
+                    </div>'; 
+        var mob = '<div id="' + index +'" class="row valign-wrapper " onclick="showSerie(\'' + index + '\')"><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div>';
+        htmlCodeDesk = htmlCodeDesk + desk;
+        htmlCodeMob = htmlCodeMob + mob;
+    }
+    }); 
+      $('#posters-desk').append(htmlCodeDesk);
+      $('#posters-mob').append(htmlCodeMob);
+    });
+
+}
+
+/* MOVIE JS STUFF */
+var info;
+function showMovie(key){
+  console.log("showing movie");
+  $("#screen").html(' '); 
+  $("#screen").load("movie.html"); 
+  info = movies[key];
+}
+
+function onMovieLoad(){
+  $('#title').html('<h4>' + info.info.Title + '</h4>');
+  $('#poster').html('<img src="' + info.info.Poster + '" class="posteDesk" />');
+  $('#synopsis').html('<h5><b>Synopsis</b></h5><hr>' + info.info.Plot);
+  $('#rating').html('<h6><b>Rating: </b></h6>' + info.info.imdbRating);
+  $('#actors').html('<h6><b>Actors: </b></h6>' +info.info.Actors);
+  $('#genres').html('<h6><b>Genre: </b></h6>' +info.info.Genre);
+  $('#awards').html('<h6><b>Awards: </b></h6>' +info.info.Awards);
+
+  $.each(info.files, function(key, val){
+    console.log(val);
+    if(val.indexOf('/') < 0){     
+      $('#files').append('<div class="row"><button onclick="copyTextToClipboard(\'' + encodeURI(val) + '\')" style="width: 100%;" class="waves-effect waves-light btn jewel" href="">' + val.split('\\')[val.split('\\').length - 1] + '</button></div>');
+    } else {
+      $('#files').append('<div class="row"><button onclick="copyTextToClipboard(\'' + encodeURI(val) + '\')" style="width: 100%;" class="waves-effect waves-light btn jewel" href="">' + val.split('/')[val.split('/').length - 1] + '</button></div>');
+    }
+  });
+
+  $('#title-mob').html('<center><h4>' + info.info.Title + '</h4></center>');
+  $('#poster-mob').html('<img src="' + info.info.Poster + '" class="posterMob" />');
+  $('#synopsis-mob').html('<h5><b>Synopsis</b></h5><br>' + info.info.Plot);
+  $('#rating-mob').html('<h6><b>Rating: </b></h6>' + info.info.imdbRating);
+  $('#actors-mob').html('<h6><b>Actors: </b></h6>' +info.info.Actors);
+  $('#genres-mob').html('<h6><b>Genre: </b></h6>' +info.info.Genre);
+  //$('#awards').html('<h6><b>Awards: </b></h6>' +info.info.Awards);
+
+  $.each(info.files, function(key, val){
+    if(val.indexOf('/') < 0){     
+      $('#files-mob').append('<div class="row"><a style="width: 100%;" href="' + val + '" class="waves-effect waves-light btn jewel" href="">' + val.split('\\')[val.split('\\').length - 1] + '</a></div>');
+    } else {
+      $('#files-mob').append('<div class="row"><a style="width: 100%;" href="' + val + '" class="waves-effect waves-light btn jewel" href="">' + val.split('/')[val.split('/').length - 1] + '</a></div>');
+    }
+  })
+
+
+}
+
+function copyTextToClipboard(text) {
+  var textArea = document.createElement("textarea");
+
+  //
+  // *** This styling is an extra step which is likely not required. ***
+  //
+  // Why is it here? To ensure:
+  // 1. the element is able to have focus and selection.
+  // 2. if element was to flash render it has minimal visual impact.
+  // 3. less flakyness with selection and copying which **might** occur if
+  //    the textarea element is not visible.
+  //
+  // The likelihood is the element won't even render, not even a flash,
+  // so some of these are just precautions. However in IE the element
+  // is visible whilst the popup box asking the user for permission for
+  // the web page to copy to the clipboard.
+  //
+
+  // Place in top-left corner of screen regardless of scroll position.
+  textArea.style.position = 'fixed';
+  textArea.style.top = 0;
+  textArea.style.left = 0;
+
+  // Ensure it has a small width and height. Setting to 1px / 1em
+  // doesn't work as this gives a negative w/h on some browsers.
+  textArea.style.width = '2em';
+  textArea.style.height = '2em';
+
+  // We don't need padding, reducing the size if it does flash render.
+  textArea.style.padding = 0;
+
+  // Clean up any borders.
+  textArea.style.border = 'none';
+  textArea.style.outline = 'none';
+  textArea.style.boxShadow = 'none';
+
+  // Avoid flash of white box if rendered for any reason.
+  textArea.style.background = 'transparent';
+
+
+  textArea.value = text;
+
+  document.body.appendChild(textArea);
+
+  textArea.select();
+
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    alert('Succesfully copied video url! You can now open VLC and paste it there!');
+  } catch (err) {
+    alert('Oops, unable to copy');
+  }
+
+  document.body.removeChild(textArea);
+}
+
+/* SERIE JS STUFF */
+var info;
+function showSerie(key){
+  $("#screen").html(' '); 
+  $("#screen").load("serie.html"); 
+  info = series[key];
+}
+
+function onSerieLoad(){
+  $('#title').html('<h4>' + info.info.Title + '</h4>');
+  $('#poster').html('<img src="' + info.info.Poster + '" class="posteDesk" />');
+  $('#synopsis').html('<h5><b>Synopsis</b></h5><hr>' + info.info.Plot);
+  $('#rating').html('<h6><b>Rating: </b></h6>' + info.info.imdbRating);
+  $('#actors').html('<h6><b>Actors: </b></h6>' +info.info.Actors);
+  $('#genres').html('<h6><b>Genre: </b></h6>' +info.info.Genre);
+  $('#awards').html('<h6><b>Awards: </b></h6>' +info.info.Awards);
+
+  $.each(info.files, function(key, val){
+    console.log(val);
+    if(val.indexOf('/') < 0){     
+      $('#files').append('<div class="row"><button onclick="copyTextToClipboard(\'' + encodeURI(val) + '\')" style="width: 100%;" class="waves-effect waves-light btn jewel" href="">' + val.split('\\')[val.split('\\').length - 1] + '</button></div>');
+    } else {
+      $('#files').append('<div class="row"><button onclick="copyTextToClipboard(\'' + encodeURI(val)+ '\')" style="width: 100%;" class="waves-effect waves-light btn jewel" href="">' + val.split('/')[val.split('/').length - 1] + '</button></div>');
+    }
+  });
+
+  $('#title-mob').html('<center><h4>' + info.info.Title + '</h4></center>');
+  $('#poster-mob').html('<img src="' + info.info.Poster + '" class="posterMob" />');
+  $('#synopsis-mob').html('<h5><b>Synopsis</b></h5><br>' + info.info.Plot);
+  $('#rating-mob').html('<h6><b>Rating: </b></h6>' + info.info.imdbRating);
+  $('#actors-mob').html('<h6><b>Actors: </b></h6>' +info.info.Actors);
+  $('#genres-mob').html('<h6><b>Genre: </b></h6>' +info.info.Genre);
+  //$('#awards').html('<h6><b>Awards: </b></h6>' +info.info.Awards);
+
+  $.each(info.files, function(key, val){
+    if(val.indexOf('/') < 0){     
+      $('#files-mob').append('<div class="row"><a style="width: 100%;" href="' + val + '" class="waves-effect waves-light btn jewel" href="">' + val.split('\\')[val.split('\\').length - 1] + '</a></div>');
+    } else {
+      $('#files-mob').append('<div class="row"><a style="width: 100%;" href="' + val + '" class="waves-effect waves-light btn jewel" href="">' + val.split('/')[val.split('/').length - 1] + '</a></div>');
+    }
+  })
+
+
+}
+
+
+function copyTextToClipboard(text) {
+  var textArea = document.createElement("textarea");
+
+  //
+  // *** This styling is an extra step which is likely not required. ***
+  //
+  // Why is it here? To ensure:
+  // 1. the element is able to have focus and selection.
+  // 2. if element was to flash render it has minimal visual impact.
+  // 3. less flakyness with selection and copying which **might** occur if
+  //    the textarea element is not visible.
+  //
+  // The likelihood is the element won't even render, not even a flash,
+  // so some of these are just precautions. However in IE the element
+  // is visible whilst the popup box asking the user for permission for
+  // the web page to copy to the clipboard.
+  //
+
+  // Place in top-left corner of screen regardless of scroll position.
+  textArea.style.position = 'fixed';
+  textArea.style.top = 0;
+  textArea.style.left = 0;
+
+  // Ensure it has a small width and height. Setting to 1px / 1em
+  // doesn't work as this gives a negative w/h on some browsers.
+  textArea.style.width = '2em';
+  textArea.style.height = '2em';
+
+  // We don't need padding, reducing the size if it does flash render.
+  textArea.style.padding = 0;
+
+  // Clean up any borders.
+  textArea.style.border = 'none';
+  textArea.style.outline = 'none';
+  textArea.style.boxShadow = 'none';
+
+  // Avoid flash of white box if rendered for any reason.
+  textArea.style.background = 'transparent';
+
+
+  textArea.value = text;
+
+  document.body.appendChild(textArea);
+
+  textArea.select();
+
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    alert('Succesfully copied video url! You can now open VLC and paste it there!');
+  } catch (err) {
+    alert('Oops, unable to copy');
+  }
+
+  document.body.removeChild(textArea);
+}
+
+/* SETTINGS JS STUFF */
+
+sessionStorage.Connected = false;
+sessionStorage.finishedReceiving = false;
+
+function showSettings(){
+
+  $("#screen").html(' '); 
+  $("#screen").load("settings.html"); 
+
+}
+
+
+
+function refreshServerList(){
+
+  var detectServers = new ClientSideServerDetection();
+    //you can add multiple ports to check, but be aware that every new port to check increases search time significantly,
+  //better check one port if possible.
+  //if this is not set, default ports that will be checked are "80" and "8080"
+  detectServers.setPorts(["4655"]);
+
+  //runs the detection twice for every partial
+  detectServers.setPartials([""]);
+
+  //run the server detection, parameter is a callback function
+  //you can run this multiple times
+  detectServers.runDetection(thisDoesNothing);
+
+  //callback function, needs a parameter which will contain server data *read more down below
+  //in its current state, the callback function will be ran every single time a new unique server has been detected
+  function thisDoesNothing(){
+
+  }
+  var intrv = setInterval(function(){
+    if(sessionStorage.CSSDFound == "true"){
+
+      var serverInfo = JSON.parse(sessionStorage.serversFound);
+       $('#servers').html(' ');
+      for(var x = 0; x < serverInfo.length; x++){
+            $('#servers').append('<div class="col s12 row"><button class="btn jewel waves-effect waves-light " style="width: 100%;" onclick="connectToServer(\'' + serverInfo[x].ip + '\')">' + serverInfo[x].ip + '</button></div>');
+        }
+        $('#loaderServers').html(' ');
+    }
+  }, 500);
+}
+
+function connectToServer(ip){
+  if(ip === undefined){
+    var ipdata = JSON.parse(localStorage.getItem("ServerIP"));
+    if(sessionStorage.Connected == "false" && ipdata != null){
+      startComWithDB(ipdata.ip, connectSucces, doneReceiving, connectError);
+
+      Materialize.toast('Trying to connected to ' + ipdata.ip, 4000); 
+    } else {
+      refreshServerList();
+    }
+  } else {
+
+    localStorage.setItem("ServerIP", '{ "ip" : "' + ip + '", "succes" : false}');
+    startComWithDB(ip, connectSucces, doneReceiving,  connectError);
+    Materialize.toast('Trying to connected to ' + ip, 4000);  
+  }
+  
+}
+
+function connectSucces(){
+  console.log("CONNECTED YUS!");
+  console.log(localStorage.getItem("ServerIP"));
+  if(sessionStorage.Connected == "false"){
+    sessionStorage.Connected = true;
+    var ipdata = JSON.parse(localStorage.getItem("ServerIP"));
+    if(!ipdata.succes){
+      ipdata.succes = true;
+      localStorage.setItem("ServerIP", JSON.stringify(ipdata));
+    }
+
+    Materialize.toast('Connected to ' + ipdata.ip, 4000); 
+
+    showHome();
+  }
+
+
+}
+
+function doneReceiving(){
+  console.log("FINISHED RECEIVING :D");
+  sessionStorage.finishedReceiving = "true";
+}
+
+function connectError(){
+  sessionStorage.Connected = false;
+  var ipdata = JSON.parse(localStorage.getItem("ServerIP"));
+  if(ipdata.succes){
+    localStorage.removeItem("ServerIP");
+    refreshServerList();
+  }
+}
+
+function log(txt){
+  //$('#log').append(txt);
+  //$('#log').append("\r\n");
+}
+
+/* UNKNOWN JS STUFF */
+function showUnknown(){
+
+  $("#screen").html(' '); 
+  $("#screen").load("unknown.html"); 
+
+}
+
+function onUnknownLoad(){
+  $(document).ready(function() {
+      
+
+    var htmlCode= "";
+    $.each(movies, function(index, val){
+
+      if(val.info.Response == "False"){
+
+        $.each(val.files, function(index, val){
+          if(val.indexOf('/') < 0){
+            var desk = '<div class="row">\
+                          <button src="' + val + '" class="btn waves-effect waves-light  jewel"> ' + val.split('\\')[val.split('\\').length - 1] + ' </button>\
+                        </div>'; 
+              htmlCode = htmlCode + desk; 
+
+          }   else {
+            var desk = '<div class="row">\
+                          <button src="' + val + '" class="btn waves-effect waves-light  jewel"> ' + val.split('/')[val.split('/').length - 1] + ' </button>\
+                        </div>'; 
+              htmlCode = htmlCode + desk; 
+          }
+
+        });
+      
+      }
+    }); 
+    $('#unknownMoviesSeries').append(htmlCode);
+    });
+
+
+}
+
+
+  </script>
+
+
+  </body>
+</html>
