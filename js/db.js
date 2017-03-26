@@ -5,10 +5,14 @@ var alreadyParsed = [];
 
 var socket;
 function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, callbackOnConnectError){
+	Materialize.toast('Initiating connection to: ' + ip + ", waiting for connection." , 4000);
 	socket = new WebSocket("ws://" + ip + ":4655");
-
+	movies = [];
+	series = [];
 	socket.onopen = function(){
 		console.log("Succesfully connected to websocket :D");
+
+		Materialize.toast('Succesfully connected to: ' + ip + ", waiting for data." , 4000);	
 		getDataFromDB();
 	}
 	socket.onmessage = function(msg){
@@ -29,6 +33,12 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 		}
 		callbackOnConnectSucces();
 
+	}
+
+	socket.onclose = function(res){
+		console.log("Close WS : ");
+		console.log(res.reason);
+		callbackOnConnectError();
 	}
 	socket.onerror = function(err){
 		console.log("Error WS : ");
@@ -68,6 +78,11 @@ function containsObject(obj, list) {
 }
 
 window.onbeforeunload = function() {
-    socket.onclose = function () {}; // disable onclose handler first
-    socket.close();
+	try{
+	    socket.onclose = function () {}; // disable onclose handler first
+	    socket.close();
+
+	} catch(err){
+		console.log("Chrome doesnt have issues like this... god damn you edge: " + err);
+	}
 };

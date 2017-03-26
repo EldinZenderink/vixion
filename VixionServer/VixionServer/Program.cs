@@ -408,7 +408,7 @@ namespace VixionServer
         static void WsDebugReceived(object sender, WebSocketEventArgs args)
         {
             string msg = args.Message;
-            //Console.WriteLine(msg);
+            Console.WriteLine(msg);
 
         }
 
