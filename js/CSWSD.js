@@ -12,232 +12,137 @@ YOU DO NEED JQUERY FOR THIS TO WORK... just in case...
 Released under MIT License. Enjoy!
 Eldin Zenderink 02-07-2016
 */
+var serversFound = [];
 
-function ClientSideServerDetection  (){
-	
-	//just some default value
-	var localIpReturned = false;
-	var serversFound = [];
-	var tested = ["test"];
-	var serversFound = [];
-	var portsToCheck = ["80", "8080"];
-	var partials = ["/"];
-	var endAddress = 255;    	
-    var startAddress = 1;
-    var timeout = 2000;
-    var baseIp = "0.0.0";
-    var newServerFound = false;
-    var callbackToRun = function(){return;};
-    sessionStorage.serversFound =serversFound;
-	sessionStorage.CSSDFound =false;
-    //some setters
-    this.setPorts= function(portsToCheckInput){
-    	portsToCheck = portsToCheckInput;
-    }
-
-    this.setPortRange = function(from, to){
-    	portsToCheck = [];
-    	for(var x = from; x <= to; x++){
-    		console.log("creating port read request for: " + x);
-     	}
-    }
-    this.setPartials = function(partialsInput){
-    	partials = partialsInput;
-    }
-    this.setStartEnd = function(start, end){
-    	startAddress = start;
-		endAddress = end;
-    }
-    this.setTimeOut = function(timeoutInput){
-    	timeout = timeoutInput;
-    }
-    this.setBaseIp = function(baseipInput){
-    	baseIp = baseipInput;
-    }
-
-    this.getBaseIp 	 = function(){
-    	return baseIp;
-    }
-
-	//starts the procedure to locate and retreive the responding servers on a local network
-	this.runDetection = function(callback){
-		if (!window.WebSocket) alert("WebSocket not supported by this browser");
-		serversFound = [];
-		callbackToRun = callback;
-		//you can only retreive your local ip once, to make it run more often without pager refresh i had to store the base ip.
-		if(baseIp != "0.0.0"){
-			this.runAjaxRequests(baseIp, callbackToRun, portsToCheck, partials, startAddress, endAddress, timeout);
-		} else {
-			this.getLocalIp(this.gotIp, this.runAjaxRequests);				
-		}
-				
-	}
-
-	//callback function for when the local ip has been retreived
-	this.gotIp = function (ip, runAjaxFunction){
-		var ipParts = ip.split('.');
-		baseIp = "";
-		for(var x = 0; x < 3; x++){
-			baseIp =  baseIp + ipParts[x] + ".";
-		}
-		baseIp = baseIp.substr(0, baseIp.length - 1);
-		runAjaxFunction(baseIp, callbackToRun, portsToCheck, partials, startAddress, endAddress, timeout);
-	}
-
-	
-	//we need to get our local ip on our network, your wannabe detected server has to run on the same network with the same base ip as your client
-	//for example, server: a.x.d.f - client: a.x.d.g (or in numbers, server: 192.168.65.5 - client: 192.168.65.132)
-	//local ip detection done by WebRTC stun request, only available on chrome,firefox, opera, android & iOS.
-	//example used: https://github.com/diafygi/webrtc-ips
-	this.getLocalIp = function(callback, runAjaxFunction){
-		//contains every ip found
-		var arrayWithIps = [];
-	    //compatibility for firefox and chrome
-	    var RTCPeerConnection = window.RTCPeerConnection
-	        || window.mozRTCPeerConnection
-	        || window.webkitRTCPeerConnection;
-	    var useWebKit = !!window.webkitRTCPeerConnection;
-
-	    //minimal requirements for data connection
-	    var mediaConstraints = {
-	        optional: [{RtpDataChannels: true}]
-	    };
-
-	    var servers = {iceServers: [{urls: "stun:stun.services.mozilla.com"}]};
-
-	    //construct a new RTCPeerConnection
-	    var pc = new RTCPeerConnection(servers, mediaConstraints);
-
-	    function handleCandidate(candidate){
-	        //match just the IP address
-	        var ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/
-	        var ip_addr = ip_regex.exec(candidate)[1];
-	        return ip_addr;
-	    }
-
-
-	    //listen for candidate events
-	    pc.onicecandidate = function(ice){
-	        //skip non-candidate events
-	        if(ice.candidate && !localIpReturned){
-	            var ip = handleCandidate(ice.candidate.candidate);
-	            arrayWithIps.push(ip);
-	            //call callback and return ip, which is in most cases local ip
-	            if(arrayWithIps.length > 1){
-	            	callback(arrayWithIps[0], runAjaxFunction);
-	            	localIpReturned = true;
-	            }
-	        }
-	    };
-
-
-	    //create a bogus data channel
-	    pc.createDataChannel("");
-
-	    //create an offer sdp
-	    pc.createOffer(function(result){
-	        //trigger the stun server request
-	        pc.setLocalDescription(result, function(){}, function(){});
-
-	    }, function(){});
-
-        //read candidate info from local description
-        try{
-
-	        var lines = pc.localDescription.sdp.split('\n');
-	        lines.forEach(function(line){
-	            if(line.indexOf('a=candidate:') === 0){
-	                handleCandidate(line);
-	            }
-	        });
-        } catch(err){
-        	console.log(err);
-        }
-	}
-
-
-	//run the ajax calls for every port, ip between default 1 - 254, or your specific range, and for every partial, you can also make it detect servers which return error response, but it will always exlcude servers which timeout (basically are unreachable, errors mean that the server IS reachable)
-	this.runAjaxRequests = function(baseIp, callback, portsToCheck, partials, startAddress, endAddress, timeout){		
-		//async ajax requests, you can specify timeout and such, be aware that checking multiple ports significantly increases waiting time
-		function ajaxRequest(ip, port, partial, timetotimeout){
-
-			$.when( $.ajax({url: 'http://'+ ip + ":" + port + partial, timeout: timetotimeout})).then(function( data, textStatus, jqXHR) {
-				var serverInfo = {
-					ip: ip,
-					port: port,
-					partial: partial,
-					data: data,
-					type: "HTTP"
-				}				
-				var addIfNotFound = true;
-				$.each(serversFound, function(key, val){
-					if(val.ip == ip && val.port == port){
-						addIfNotFound = false;
-						return;
-					}
-				});	
-				if(addIfNotFound){
-					serversFound.push(serverInfo);
-				}
-			}, function (xhr, ajaxOptions, thrownError){
-				//console.log(xhr);
-				if(xhr.status > 0){
-					var serverInfo = {
-						ip: ip,
-						port: port,
-						partial: partial,
-						data: xhr,
-						type: "HTTP"
-					}
-					var addIfNotFound = true;
-					$.each(serversFound, function(key, val){
-						if(val.ip == ip && val.port == port){
-							addIfNotFound = false;
-							return;
-						}
-					});	
-					if(addIfNotFound){
-						serversFound.push(serverInfo);
-					}		
-				} 
-			});
-		}
-
-		
-		function webSocketRequest(ip, port, partial){
-			var ws = new WebSocket("ws://" + ip + ":" + port + partial);
-			var serverInfo = {
-				ip: ip,
-				port: port,
-				partial: partial,
-				data: "",
-				type: "WS"
-			}
-			ws.onopen = function(data){
-				console.log("found connection at: " + ip);
-				serverInfo.ip = ip;
-				serverInfo.port = port;
-				serverInfo.partial = partial;
-				serverInfo.data = data;
-				serverInfo.type = "WS";
-				serversFound.push(serverInfo);	
-
-				sessionStorage.serversFound = JSON.stringify(serversFound);
-				sessionStorage.CSSDFound = true;
-				ws.close()
-			};
-
-			
-		}
-
-		//runs ajax request for every for every port, for every partial and port and for every partial, port and ip
-		for(var b = 0; b < portsToCheck.length; b++){
-			for(var c = 0; c < partials.length; c++){
-				for(var a = startAddress; a < endAddress; a++){
-					//ajaxRequest(baseIp+'.' + a, portsToCheck[b],  partials[c], timeout);
-					webSocketRequest(baseIp + '.' + a, portsToCheck[b], partials[c]);
-				}								
-			}			
-		}		
-	}  
+function detectWSocketServers(){
+	getLocalIp(actuallyDetectWSServers);
 }
+
+function actuallyDetectWSServers(baseIp){
+	var ipToGoThrough = 1;
+	var checkIp = setInterval(function(){
+		webSocketRequest(baseIp + '.' + ipToGoThrough);
+		ipToGoThrough++;
+		if(ipToGoThrough > 254){
+			clearInterval(checkIp);
+		}
+		if(serversFound.length > 0){			
+			sessionStorage.serversFound = JSON.stringify(serversFound);
+			sessionStorage.CSSDFound = true;
+		}
+	}, 100);
+}
+
+function getLocalIp (callback){
+	//contains every ip found
+	var arrayWithIps = [];
+    //compatibility for firefox and chrome
+    var RTCPeerConnection = window.RTCPeerConnection
+        || window.mozRTCPeerConnection
+        || window.webkitRTCPeerConnection;
+    var useWebKit = !!window.webkitRTCPeerConnection;
+
+    //minimal requirements for data connection
+    var mediaConstraints = {
+        optional: [{RtpDataChannels: true}]
+    };
+
+    var servers = {iceServers: [{urls: "stun:stun.services.mozilla.com"}]};
+
+    //construct a new RTCPeerConnection
+    var pc = new RTCPeerConnection(servers, mediaConstraints);
+
+    function handleCandidate(candidate){
+        //match just the IP address
+        var ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/
+        var ip_addr = ip_regex.exec(candidate)[1];
+        return ip_addr;
+    }
+
+
+    //listen for candidate events
+    pc.onicecandidate = function(ice){
+        //skip non-candidate events
+        if(ice.candidate && !localIpReturned){
+            var ip = handleCandidate(ice.candidate.candidate);
+            //call callback and return ip, which is in most cases local ip
+            if(arrayWithIps.length > 1){
+            	var ipParts = ip.split('.');
+				baseIp = "";
+				for(var x = 0; x < 3; x++){
+					baseIp =  baseIp + ipParts[x] + ".";
+				}
+				baseIp = baseIp.substr(0, baseIp.length - 1);
+				callback(baseIp);
+            }
+        }
+    };
+
+
+    //create a bogus data channel
+    pc.createDataChannel("");
+
+    //create an offer sdp
+    pc.createOffer(function(result){
+        //trigger the stun server request
+        pc.setLocalDescription(result, function(){}, function(){});
+
+    }, function(){});
+
+    //read candidate info from local description
+    try{
+
+        var lines = pc.localDescription.sdp.split('\n');
+        lines.forEach(function(line){
+            if(line.indexOf('a=candidate:') === 0){
+                handleCandidate(line);
+            }
+        });
+    } catch(err){
+    	console.log(err);
+    }
+}
+
+function webSocketRequest(ip, port){
+	var ws = new WebSocket("ws://" + ip + ":" + port);
+	var serverInfo = {
+		ip: ip,
+		port: port,
+		partial: partial,
+		data: "",
+		type: "WS"
+	}
+	ws.onopen = function(data){
+		console.log("found connection at: " + ip);
+		serverInfo.ip = ip;
+		serverInfo.port = port;
+		serverInfo.partial = partial;
+		serverInfo.data = data;
+		serverInfo.type = "WS";
+		serversFound.push(serverInfo);	
+		ws.close()
+	};	
+}
+
+
+navigator.sayswho= (function(){
+    var ua= navigator.userAgent, tem, 
+    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    if(/trident/i.test(M[1])){
+        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
+        return 'IE '+(tem[1] || '');
+    }
+    if(M[1]=== 'Chrome'){
+        tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
+        if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+    }
+    M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+    if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+    return M.join(' ');
+})();
+
+$(document).ready(function() {
+    if(navigator.sayswho.indexOf("Chrome") < 0 && navigator.sayswho.indexOf("Firefox") < 0){
+    	 $('#WrongBrowser').modal('open');
+    }
+});
