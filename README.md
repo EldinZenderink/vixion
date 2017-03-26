@@ -58,14 +58,13 @@ The most important part, you are done installing the damn thing... now what?
 
 It's easy :D :
 - Open your browser(prefferably Chrome).
-- Go to [http://vixion.16mb.com/](http://vixion.16mb.com/).**
+- Go to [https://eldinzenderink.github.io/vixion/](https://eldinzenderink.github.io/vixion/).
 - Follow the on screen steps.
 - Be patient and let the server do its job^^.
 - Have fun :D.
 
 **Done.**
 
-** Temporary webhost, depending if people are starting to actively use it, I might switch to a paid domain and/or webhost.
 
 ### Development
 
