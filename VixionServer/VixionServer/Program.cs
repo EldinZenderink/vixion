@@ -38,6 +38,7 @@ namespace VixionServer
             http = new HttpServer(port);
             http.SetWebHomeDir(Directory.GetCurrentDirectory() + @"\GUI");
             http.Start();
+
             ws = new WebSocketServer(4655);
             ws.MessageReceived += new EventHandler<WebSocketEventArgs>(WsMessageReceived);
             ws.DebugMessage += new EventHandler<WebSocketEventArgs>(WsDebugReceived);

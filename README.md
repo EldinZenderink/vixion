@@ -58,7 +58,7 @@ The most important part, you are done installing the damn thing... now what?
 
 It's easy :D :
 - Open your browser(prefferably Chrome).
-- Go to [https://eldinzenderink.github.io/vixion/](https://eldinzenderink.github.io/vixion/).
+- Go to [http://vixion.ga](http://vixion.ga).
 - Follow the on screen steps.
 - Be patient and let the server do its job^^.
 - Have fun :D.

@@ -16,12 +16,7 @@ function parseSeries(){
 	  var htmlCodeMob = "";
 	  $.each(series, function(index, val){
 	  	if(val.info.Response == "True"){
-	  		var imageUrl = val.info.Poster;
-	  		if(imageUrl.indexOf("http") >= 0){
-	  			console.log("FOUND OUTDATED IMAGE LINK :(: " + imageUrl);
-	  			imageUrl = imageUrl.replace("http://ia.media-imdb.com/images/M", "https://images-na.ssl-images-amazon.com/images/M");
-	  			console.log("NEW LINK :)" + imageUrl)
-	  		}
+	  		var imageUrl = val.info.Poster.replace("http://ia.media-imdb.com/images/M", "https://images-na.ssl-images-amazon.com/images/M");
 	        var desk = '<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " onclick="showSerie(\'' + index + '\')">\
 			                <img src="' + imageUrl + '" class="posterImage"/>\
 		                    <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\

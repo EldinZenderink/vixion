@@ -116,11 +116,6 @@ namespace VixionServer
                         Console.WriteLine("FILE REQ: " + fileName);
                         StringBuilder response = new StringBuilder();
 
-                        if (fileName.Contains("+"))
-                        {
-
-                        }
-
                         if (IsMediaFile(fileName))
                         {
                             try
@@ -178,7 +173,13 @@ namespace VixionServer
 
                             if (fileName == "/" || fileName.Length < 2)
                             {
-                                fileName = homeDir + @"\" + defaultPage;
+                                if (!IsLinux)
+                                {
+                                    fileName = homeDir + @"\" + defaultPage;
+                                } else
+                                {
+                                    fileName = homeDir + @"\" + defaultPage;
+                                }
                             }
                             string mimeType = "text/html";
                             if (IsFontFile(fileName))
@@ -209,13 +210,32 @@ namespace VixionServer
                             }
 
 
-                            fileName = Path.Combine(homeDir, fileName.Replace("/", @"\"));
+
                             if (!fileName.Contains(homeDir))
                             {
                                 fileName = homeDir + fileName;
+                                if (IsLinux)
+                                {
+                                    fileName = fileName.Replace(@"\", "/");
+                                }
+                                else
+                                {
+                                    fileName = fileName.Replace("/", @"\");
+                                }
+                            } else
+                            {
+                                if (IsLinux)
+                                {
+                                    fileName = Path.Combine(homeDir, fileName.Replace(@"\", "/"));
+                                }
+                                else
+                                {
+                                    fileName = Path.Combine(homeDir, fileName.Replace("/", @"\"));
+                                }
                             }
 
-                            
+                           
+
 
                             try
                             {
@@ -349,6 +369,15 @@ namespace VixionServer
             else
             {
                 return false;
+            }
+        }
+
+        public bool IsLinux
+        {
+            get
+            {
+                int p = (int)Environment.OSVersion.Platform;
+                return (p == 4) || (p == 6) || (p == 128);
             }
         }
     }
