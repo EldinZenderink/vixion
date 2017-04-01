@@ -1,4 +1,4 @@
-sessionStorage.Connected = false;
+
 sessionStorage.finishedReceiving = false;
 
 function showSettings(){
@@ -25,7 +25,7 @@ function refreshServerList(){
 		$('#servers').html(' ');
 		for(var x = 0; x < serverInfo.length; x++){
 
-    		  $('#servers').append('<div class="col s12 row"><button class="btn jewel waves-effect waves-light " style="width: 100%;" onclick="connectToServer(\'' + serverInfo[x].ip + '\')">' + serverInfo[x].ip + '</button></div>');
+    		  $('#servers').append('<div class="col s12 row"><button href="#home" class="btn jewel waves-effect waves-light " style="width: 100%;" onclick="connectToServer(\'' + serverInfo[x].ip + '\')">' + serverInfo[x].ip + '</button></div>');
     	}
 
     	if(sessionStorage.CSSDFound == "true" && serverInfo.length > 0){			
@@ -44,7 +44,7 @@ function onSettingsLoad(){
 		connectToServer();
 	} else {
 		var ipdata = JSON.parse(localStorage.getItem("ServerIP"));
-		$('#connectedserver').append('<div class="col s12 row"><button class="btn jewel waves-effect waves-light " style="width: 100%;">' + ipdata.ip + '</button></div>');
+		$('#connectedserver').append('<div class="col s12 row"><button href="#home" class="btn jewel waves-effect waves-light " style="width: 100%;">' + ipdata.ip + '</button></div>');
 	}
 }
 
@@ -66,7 +66,6 @@ function connectToServer(ip){
 		startComWithDB(ip, connectSucces, doneReceiving,  connectError);
 		sessionStorage.Connected == "pending";
 		Materialize.toast('Trying to connect to ' + ip, 4000);	
-		showHome();
 	}
 	
 }
@@ -84,7 +83,8 @@ function connectSucces(){
 
 		Materialize.toast('Succesfully received data from: ' + ipdata.ip, 4000);	
 	}
-
+	
+	window.location.href= "#home";
 
 }
 

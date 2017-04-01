@@ -7,7 +7,12 @@ function showSerie(key){
 
 function onSerieLoad(){
 	$('#title').html('<h4>' + info.info.Title + '</h4>');
-	$('#poster').html('<img src="' + info.info.Poster.replace("http://ia.media-imdb.com/images/M", "https://images-na.ssl-images-amazon.com/images/M") + '" class="posteDesk" />');
+
+  var imageUrl = info.info.Poster.replace("http://ia.media-imdb.com/images/M", "https://images-na.ssl-images-amazon.com/images/M");
+  if(imageUrl.indexOf("N/A") > -1){
+    imageUrl = "/img/cover.png";
+  } 
+	$('#poster').html('<img src="' + imageUrl + '" class="posteDesk" />');
 	$('#synopsis').html('<h5><b>Synopsis</b></h5><hr>' + info.info.Plot);
 	$('#rating').html('<h6><b>Rating: </b></h6>' + info.info.imdbRating);
 	$('#actors').html('<h6><b>Actors: </b></h6>' +info.info.Actors);
@@ -24,7 +29,7 @@ function onSerieLoad(){
 	});
 
 	$('#title-mob').html('<center><h4>' + info.info.Title + '</h4></center>');
-	$('#poster-mob').html('<img src="' + info.info.Poster.replace("http://ia.media-imdb.com/images/M", "https://images-na.ssl-images-amazon.com/images/M") + '" class="posterMob" />');
+	$('#poster-mob').html('<img src="' + imageUrl + '" class="posterMob" />');
 	$('#synopsis-mob').html('<h5><b>Synopsis</b></h5><br>' + info.info.Plot);
 	$('#rating-mob').html('<h6><b>Rating: </b></h6>' + info.info.imdbRating);
 	$('#actors-mob').html('<h6><b>Actors: </b></h6>' +info.info.Actors);

@@ -13,21 +13,26 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 		console.log("Succesfully connected to websocket :D");
 
 		Materialize.toast('Succesfully connected to: ' + ip + ", waiting for data." , 4000);	
+		sessionStorage.parsedFiles = "0";
+		sessionStorage.totalFiles = "100";
+
 		getDataFromDB();
 	}
 	socket.onmessage = function(msg){
-		console.log("RECEIVED: ");
-		console.log(msg.data);
+		sessionStorage.Connected = true;
 		try{
 			parseData(JSON.parse(msg.data));
 		} catch(err){
 			
 		}
+		if(msg.data.indexOf("FILES") > -1){
+			sessionStorage.totalFiles = msg.data.split(':')[1].trim();
+			sessionStorage.parsedFiles = "0";
+		}
+		if(msg.data.indexOf("PARSED") > -1){
+			sessionStorage.parsedFiles = msg.data.split(':')[1].trim();
+		}
 		if(msg.data == "DONE"){
-			console.log("series");	
-			console.log(series);
-			console.log("movies");	
-			console.log(movies);
 			socket.close();
 			callbackOnDoneReceiving();
 		}
@@ -38,11 +43,13 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 	socket.onclose = function(res){
 		console.log("Close WS : ");
 		console.log(res.reason);
+		sessionStorage.Connected = false;
 		callbackOnConnectError();
 	}
 	socket.onerror = function(err){
 		console.log("Error WS : ");
 		console.log(err);
+		sessionStorage.Connected = false;
 		callbackOnConnectError();
 	}
 	
@@ -55,15 +62,14 @@ function getDataFromDB(){
 function parseData(files){
  	var info = files.info;
  	if(info.Type == "series"){
- 		if(!containsObject(files, series)){
+ 		if(!containsObject(info.Title, series)){
  			series.push(files);
  		}
  	} else {
- 		if(!containsObject(files, movies)){
+ 		if(!containsObject(info.Title, movies)){
  			movies.push(files);
  		}
  	}
-
 }
 
 function containsObject(obj, list) {

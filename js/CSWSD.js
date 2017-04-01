@@ -14,6 +14,7 @@ Eldin Zenderink 02-07-2016
 */
 var serversFound = [];
 var localIpReturned = false;
+var isRunning = false;
 function detectWSocketServers(){
 	serversFound = [];
 	localIpReturned = false;
@@ -45,27 +46,33 @@ function webSocketRequest(ip, port){
 
 function actuallyDetectWSServers(baseIp){
 	console.log("Found your local ip: " + baseIp);
-	var ipToGoThrough = 1; 
-	sessionStorage.CSSDFound = false;
-	var checkIp = setInterval(function(){
-		console.log(baseIp + '.' + ipToGoThrough);
-		webSocketRequest(baseIp + '.' + ipToGoThrough, 4655);
-		ipToGoThrough++;
-		if(ipToGoThrough > 254){
 
-			sessionStorage.CSSDFound = true;
-			clearInterval(checkIp);
-		}		
-	}, 100);
+	if(!isRunning){
+		var ipToGoThrough = 1; 
+		sessionStorage.CSSDFound = false;
+		var checkIp = setInterval(function(){
+			isRunning = true;
+			console.log(baseIp + '.' + ipToGoThrough);
+			webSocketRequest(baseIp + '.' + ipToGoThrough, 4655);
+			ipToGoThrough++;
+			if(ipToGoThrough > 254){
 
-	try{
-		clearInterval(generalCheck);
-	} catch (err){
-		console.log("general check not running yet");
+				sessionStorage.CSSDFound = true;
+				isRunning = false;
+				clearInterval(checkIp);
+			}		
+		}, 25);
+
+		try{
+			clearInterval(generalCheck);
+		} catch (err){
+			console.log("general check not running yet");
+		}
+		var generalCheck = setInterval(function(){
+			sessionStorage.serversFound = JSON.stringify(serversFound);
+		}, 200);
 	}
-	var generalCheck = setInterval(function(){
-		sessionStorage.serversFound = JSON.stringify(serversFound);
-	}, 200);
+	
 }
 
 function getLocalIp (callback){

@@ -17,8 +17,22 @@ Vixion is a media indexation software. It indexes all your video files depending
 [Installation On Windows (10)](https://www.youtube.com/watch?v=jVJ5YrxVZBM&feature=youtu.be)
 [Installation On Linux(Debian)](https://www.youtube.com/watch?v=vys3SYVEC3M&feature=youtu.be)
 
-# New Features!
- - No new features yet, but improvements may come!
+# New Features sinds previous release!
+ *Server:*
+
+ - Fully reworked file parsing through IMDB/OMDB (it detects quit a bit more and correct than the previous release).
+ - Added support for excluding certain filenames (or directories).
+ - Now saves all the parsed files locally as json, meaning the next time you load the interface, it doesn't have to parse all the files again.
+ - Improved stability.
+
+ *Interface:*
+ - Added progressbar for showing the parsing progress.
+ - Make back/previous screen/page work.
+ - Added default poster for posters images which didn't load.
+ - Improved server detection.
+ - Added support for App modus within android (With chrome: go to settings -> add to home screen)
+ - Added a quick and dirty logo.
+
 
 ### Tech
 
@@ -63,6 +77,15 @@ It's easy :D :
 - Be patient and let the server do its job^^.
 - Have fun :D.
 
+If you want to exclude certain filenames or directories(their name) from being parsed through IMDB/OMDB, do the following:
+
+- Go to the directory where VixionServer.exe resides
+- Create a file called "exclude.txt"
+- Add everything that should be excluded on a new line.
+- Save the file
+- If there is a file called "filesparsed.json" present, remove it.
+- Restart VixionServer
+
 **Done.**
 
 
@@ -92,7 +115,6 @@ Much like everything, this is the first release of Vixion, and with every releas
  - Improve information scraping from IMDB.
  - Add Search functionality to the interface.
  - Make a local server for desktop use, that allows videos to be opened in the default media player directly (UGH).
- - Get a real webhost.
 
 License
 ----

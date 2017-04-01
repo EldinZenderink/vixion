@@ -28,3 +28,39 @@ navigator.sayswho= (function(){
     if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
     return M.join(' ');
 })();
+
+$(window).on('popstate', function (e) {
+    var state = e.originalEvent.state;
+    if (state !== null) {
+        alert('your trying to go back, arent you?');
+    }
+});
+
+var previousPage = window.location.href;
+setInterval(function(){
+	var currentPage = window.location.href;
+	console.log(currentPage);
+	if(currentPage != previousPage){
+		if(currentPage.indexOf('#') > -1){
+			if(currentPage.indexOf('series') > -1){
+				showSeries();
+			} else if(currentPage.indexOf('movies') > -1){
+				showMovies();
+			} else if(currentPage.indexOf('serie') > -1){
+				var index = parseInt(currentPage.split('_')[1]);
+				showSerie(index);
+			} else if(currentPage.indexOf('movie') > -1){
+				var index = parseInt(currentPage.split('_')[1]);
+				showMovie(index);
+			} else if(currentPage.indexOf('settings') > -1){
+				showSettings();
+			} else if(currentPage.indexOf('home') > -1){
+				showHome();
+			}else if(currentPage.indexOf('unknown') > -1){
+				showUnknown();
+			}
+		}			
+	}
+
+	previousPage = currentPage;
+}, 100);
