@@ -84,7 +84,7 @@ namespace VixionServer
         static void UpdateFileDic()
         {
 
-
+            int amountOfMoviesAndSeriesAlreadyParsed = 0;
             JArray jsonParse = null;
             if (File.Exists("filesparsed.json"))
             {
@@ -96,12 +96,16 @@ namespace VixionServer
                     currentAmountOfFilesParsed = int.Parse(jsonParse[0]["currentAmountOfFiles"].ToString());
                     Console.WriteLine("Already parsed files: " + currentAmountOfFilesParsed);
                     Console.WriteLine("Files already parsed!");
-                    ws.SendGlobalMessage("FILES: " + jsonParse.Count());
+                    ws.SendGlobalMessage("FILES: " + jsonParse[0]["currentAmountOfFiles"]);
+                    ws.SendGlobalMessage("DONEPARSING");
+                    ws.SendGlobalMessage("FOUND: " + (jsonParse.Count() - 1));
+                    amountOfMoviesAndSeriesAlreadyParsed = int.Parse((string)jsonParse[0]["currentAmountOfFiles"]);
                     for (int i = 1; i < jsonParse.Count(); i++)
                     {
                         ws.SendGlobalMessage(jsonParse[i].ToString());
+                        ws.SendGlobalMessage("SEND: " + i);
                     }
-                    ws.SendGlobalMessage("DONE");
+                    ws.SendGlobalMessage("DONESENDING");
                 }
             } else
             {
@@ -111,128 +115,140 @@ namespace VixionServer
             IEnumerable<string> allfiles = GetFiles(Directory.GetCurrentDirectory());
             int totalAmountOfFiles = allfiles.Count() - 1;
 
-            if (totalAmountOfFiles != currentAmountOfFilesParsed)
+            if(totalAmountOfFiles != amountOfMoviesAndSeriesAlreadyParsed)
             {
-                Console.WriteLine("Updating File Dictionary!");
-                ws.SendGlobalMessage("FILES: " + totalAmountOfFiles);
-                List<string> files = new List<string>();
-                int i = 0;
-
-                string imdbId = "";
-                string previousFile = "";
-                JObject data = null;
-                foreach (var file in allfiles)
+                if (totalAmountOfFiles != currentAmountOfFilesParsed)
                 {
+                    Console.WriteLine("Updating File Dictionary!");
+                    ws.SendGlobalMessage("FILES: " + totalAmountOfFiles);
+                    List<string> files = new List<string>();
+                    int i = 0;
 
-                    string filetobeparsed = ((string)file).Replace(Directory.GetCurrentDirectory(), "");
-                    if (isMediaFile(filetobeparsed))
+                    string imdbId = "";
+                    string previousFile = "";
+                    JObject data = null;
+                    foreach (var file in allfiles)
                     {
-                        ws.SendGlobalMessage("PARSED: " + i);
-                        
-                        List<string> DirsInPath = new List<string>();
-                        if (file.Contains("/"))
+
+                        string filetobeparsed = ((string)file).Replace(Directory.GetCurrentDirectory(), "");
+                        if (isMediaFile(filetobeparsed))
                         {
-                            DirsInPath.AddRange(file.Split('/'));
-                        }
-                        else
-                        {
-                            DirsInPath.AddRange(file.Split('\\'));
-                        }
+                            ws.SendGlobalMessage("PARSED: " + i);
 
-                        if (previousFile != DirsInPath[DirsInPath.Count - 2])
-                        {                            
-                            data = parser.GetIMDBData(file);
-                            JToken token = data;
-                            imdbId = (string)token.SelectToken("imdbID");
-                        } 
-
-
-                        string urlToFile = ((string)file).Replace(Directory.GetCurrentDirectory(), "http://" + GetLocalIPAddress() + ":" + port).Replace(@"\", "/");
-
-                        if(imdbId != null && imdbId != "FALSE")
-                        {
-
-                            if (dicWithFiles.ContainsKey(imdbId))
+                            List<string> DirsInPath = new List<string>();
+                            if (file.Contains("/"))
                             {
-
-                                DataContainer info = new DataContainer();
-                                dicWithFiles.TryGetValue(imdbId, out info);
-                                DataContainer oldinfo = info;
-                                if (!info.files.Contains(urlToFile))
-                                {
-                                    info.files.Add(urlToFile);
-                                }
-                                dicWithFiles.TryUpdate(imdbId, info, oldinfo);
-                                string json = JsonConvert.SerializeObject(info, Formatting.Indented);
+                                DirsInPath.AddRange(file.Split('/'));
                             }
                             else
                             {
-                                DataContainer info = new DataContainer();
-                                info.files = new List<string>();
-                                info.files.Add(urlToFile);
-                                info.info = data;
-                                dicWithFiles.TryAdd(imdbId, info);
+                                DirsInPath.AddRange(file.Split('\\'));
                             }
 
+                            if (previousFile != DirsInPath[DirsInPath.Count - 2])
+                            {
+                                data = parser.GetIMDBData(file);
+                                JToken token = data;
+                                imdbId = (string)token.SelectToken("imdbID");
+                            }
+
+
+                            string urlToFile = ((string)file).Replace(Directory.GetCurrentDirectory(), "http://" + GetLocalIPAddress() + ":" + port).Replace(@"\", "/");
+
+                            if (imdbId != null && imdbId != "FALSE")
+                            {
+
+                                if (dicWithFiles.ContainsKey(imdbId))
+                                {
+
+                                    DataContainer info = new DataContainer();
+                                    dicWithFiles.TryGetValue(imdbId, out info);
+                                    DataContainer oldinfo = info;
+                                    if (!info.files.Contains(urlToFile))
+                                    {
+                                        info.files.Add(urlToFile);
+                                    }
+                                    dicWithFiles.TryUpdate(imdbId, info, oldinfo);
+                                    string json = JsonConvert.SerializeObject(info, Formatting.Indented);
+                                }
+                                else
+                                {
+                                    DataContainer info = new DataContainer();
+                                    info.files = new List<string>();
+                                    info.files.Add(urlToFile);
+                                    info.info = data;
+                                    dicWithFiles.TryAdd(imdbId, info);
+                                }
+
+                            }
+                            previousFile = DirsInPath[DirsInPath.Count - 2];
                         }
-                        previousFile = DirsInPath[DirsInPath.Count - 2];
+
+
+                        i++;
                     }
 
+                    currentAmountOfFilesParsed = totalAmountOfFiles;
+                    ws.SendGlobalMessage("DONEPARSING");
 
-                    i++;
+                    ws.SendGlobalMessage("FOUND: " + dicWithFiles.Count());
+                    string FullJson = "[{ \"currentAmountOfFiles\" : \"" + currentAmountOfFilesParsed + "\"},";
+                    int b = 0;
+                    foreach (KeyValuePair<string, DataContainer> pair in dicWithFiles)
+                    {
+                        string json = JsonConvert.SerializeObject(pair.Value, Formatting.Indented);
+                        ws.SendGlobalMessage(json);
+                        ws.SendGlobalMessage("SEND: " + b);
+                        FullJson = FullJson + json + ",";
+                        b++;
+                    }
+                    FullJson = FullJson.Remove(FullJson.Length - 1) + "]";
+
+                    ws.SendGlobalMessage("DONESENDING");
+                    using (StreamWriter file = new StreamWriter("filesparsed.json"))
+                    {
+                        file.WriteLine(FullJson);
+                    }
+
                 }
-
-                currentAmountOfFilesParsed = totalAmountOfFiles;
-
-
-                string FullJson = "[{ \"currentAmountOfFiles\" : \"" + currentAmountOfFilesParsed + "\"},";
-                foreach (KeyValuePair<string, DataContainer> pair in dicWithFiles)
+                else if (jsonParse != null)
                 {
-                    string json = JsonConvert.SerializeObject(pair.Value, Formatting.Indented);
-                    ws.SendGlobalMessage(json);
-                    FullJson = FullJson + json + ",";
+                    Console.WriteLine("Files already parsed!");
+                    ws.SendGlobalMessage("FILES: " + jsonParse.Count());
+                    ws.SendGlobalMessage("DONEPARSING");
+                    ws.SendGlobalMessage("FOUND: " + jsonParse.Count());
+                    for (int i = 1; i < jsonParse.Count(); i++)
+                    {
+                        ws.SendGlobalMessage(jsonParse[i].ToString());
+                        ws.SendGlobalMessage("SEND: " + i);
+                    }
+                    ws.SendGlobalMessage("DONESENDING");
                 }
-                FullJson = FullJson.Remove(FullJson.Length - 1) + "]";
-
-                using (StreamWriter file = new StreamWriter("filesparsed.json"))
+                else if (jsonParse == null && dicWithFiles.Count() > 0)
                 {
-                    file.WriteLine(FullJson);
+                    Console.WriteLine("Files already parsed but no json, creating json file!");
+                    string FullJson = "[{ \"currentAmountOfFiles\" : \"" + currentAmountOfFilesParsed + "\"},";
+                    ws.SendGlobalMessage("FILES: " + dicWithFiles.Count());
+                    ws.SendGlobalMessage("DONEPARSING");
+                    ws.SendGlobalMessage("FOUND: " + dicWithFiles.Count());
+                    int i = 0;
+                    foreach (KeyValuePair<string, DataContainer> pair in dicWithFiles)
+                    {
+                        string json = JsonConvert.SerializeObject(pair.Value, Formatting.Indented);
+                        ws.SendGlobalMessage(json);
+                        ws.SendGlobalMessage("SEND: " + i);
+                        FullJson = FullJson + json + ",";
+                        i++;
+                    }
+                    FullJson = FullJson.Remove(FullJson.Length - 1) + "]";
+                    ws.SendGlobalMessage("DONESENDING");
+                    using (StreamWriter file = new StreamWriter("filesparsed.json"))
+                    {
+                        file.WriteLine(FullJson);
+                    }
                 }
-                   
-                ws.SendGlobalMessage("DONE");
-            } else if(jsonParse != null)
-            {
-                Console.WriteLine("Files already parsed!");
-                ws.SendGlobalMessage("FILES: " + jsonParse.Count());
-                for (int i = 1; i < jsonParse.Count(); i++)
-                {
-                    ws.SendGlobalMessage(jsonParse[i].ToString());
-                }
-                ws.SendGlobalMessage("DONE");
-            } else if(jsonParse == null && dicWithFiles.Count() > 0)
-            {
-                Console.WriteLine("Files already parsed!");
-                string FullJson = "[{ \"currentAmountOfFiles\" : \"" + currentAmountOfFilesParsed + "\"},";
-                ws.SendGlobalMessage("FILES: " + dicWithFiles.Count());
-                int i = 0;
-                foreach (KeyValuePair<string, DataContainer> pair in dicWithFiles)
-                {
-                    i++;
-                    string json = JsonConvert.SerializeObject(pair.Value, Formatting.Indented);
-                    ws.SendGlobalMessage(json);
-                    FullJson = FullJson + json + ",";
-                }
-                FullJson = FullJson.Remove(FullJson.Length - 1) + "]";
 
-                using (StreamWriter file = new StreamWriter("filesparsed.json"))
-                {
-                    file.WriteLine(FullJson);
-                }
-                ws.SendGlobalMessage("DONE");
-            }
-
-
-           
+            }          
 
         }
 

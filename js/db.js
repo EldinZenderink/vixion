@@ -15,6 +15,11 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 		Materialize.toast('Succesfully connected to: ' + ip + ", waiting for data." , 4000);	
 		sessionStorage.parsedFiles = "0";
 		sessionStorage.totalFiles = "100";
+		sessionStorage.totalSend = "0";
+		sessionStorage.totalFound = "100";
+		sessionStorage.parsing = false;
+		sessionStorage.receiving = false;
+		sessionStorage.finishedReceiving = false;
 
 		getDataFromDB();
 	}
@@ -28,12 +33,29 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 		if(msg.data.indexOf("FILES") > -1){
 			sessionStorage.totalFiles = msg.data.split(':')[1].trim();
 			sessionStorage.parsedFiles = "0";
+			sessionStorage.parsing = true;
+
 		}
 		if(msg.data.indexOf("PARSED") > -1){
 			sessionStorage.parsedFiles = msg.data.split(':')[1].trim();
 		}
-		if(msg.data == "DONE"){
-			socket.close();
+
+		if(msg.data.indexOf("FOUND") > -1){
+			sessionStorage.totalFound = msg.data.split(':')[1].trim();
+			sessionStorage.receiving = true;
+		}
+
+		if(msg.data.indexOf("SEND") > -1){
+			sessionStorage.totalSend = msg.data.split(':')[1].trim();
+		}
+
+		if(msg.data == "DONEPARSING"){
+			sessionStorage.parsing = false;
+		}
+		if(msg.data == "DONESENDING"){			
+			sessionStorage.parsing = false;
+			sessionStorage.receiving = false;
+			sessionStorage.finishedReceiving = true;
 			callbackOnDoneReceiving();
 		}
 		callbackOnConnectSucces();

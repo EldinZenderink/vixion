@@ -135,11 +135,41 @@ function checkForData(){
 			$("#series").fadeIn();
 			clearInterval(waitingForDataInterval);
 		} else {
-			var totalFiles = parseInt(sessionStorage.totalFiles);
-			var parsedFiles = parseInt(sessionStorage.parsedFiles);
-			var calculatePercentage = Math.round((parsedFiles / totalFiles) * 100);
-			$("#loaderBar").css( "width", calculatePercentage + "%" );
-			$("#percentageFinished").html(calculatePercentage + '%');
+			if(sessionStorage.parsing == "true"){
+				var totalFiles = parseInt(sessionStorage.totalFiles);
+				var parsedFiles = parseInt(sessionStorage.parsedFiles);
+				var calculatePercentage = Math.round((parsedFiles / totalFiles) * 100);
+				if(calculatePercentage >= 0){
+					$("#loaderBar").show();
+					$("#percentageFinished").show();
+				} else {
+					$("#loaderBar").hide();
+					$("#percentageFinished").hide();
+				}
+
+				$("#loaderBar").css( "width", calculatePercentage + "%" );
+				$("#percentageFinished").html("PARSING: " + calculatePercentage + '%');
+
+			} else if(sessionStorage.receiving == "true"){
+				var totalToReceive = parseInt(sessionStorage.totalFound);
+				var received = parseInt(sessionStorage.totalSend);
+				var calculatePercentage = Math.round((received / totalToReceive) * 100);
+				if(calculatePercentage >= 0){
+					$("#loaderBar").show();
+					$("#percentageFinished").show();
+				} else {
+					$("#loaderBar").hide();
+					$("#percentageFinished").hide();
+				}
+
+				$("#loaderBar").css( "width", calculatePercentage + "%" );
+				$("#percentageFinished").html("RECEIVING: " + calculatePercentage + '%');
+
+				if(calculatePercentage >= 100){
+					sessionStorage.finishedReceiving = true;
+				}
+			}
+			
 		}
 	}, 100);
 

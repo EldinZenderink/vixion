@@ -39,7 +39,6 @@ $(window).on('popstate', function (e) {
 var previousPage = window.location.href;
 setInterval(function(){
 	var currentPage = window.location.href;
-	console.log(currentPage);
 	if(currentPage != previousPage){
 		if(currentPage.indexOf('#') > -1){
 			if(currentPage.indexOf('series') > -1){
@@ -64,3 +63,13 @@ setInterval(function(){
 
 	previousPage = currentPage;
 }, 100);
+
+sessionStorage.CSSDFound= false;
+sessionStorage.Connected = false;
+sessionStorage.parsedFiles = "0";
+sessionStorage.totalFiles = "100";
+sessionStorage.totalSend = "0";
+sessionStorage.totalFound = "100";
+sessionStorage.parsing = false;
+sessionStorage.receiving = false;
+sessionStorage.finishedReceiving = false;

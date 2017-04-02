@@ -50,9 +50,9 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SimpleWebSockets">
-      <HintPath>..\..\SimpleWebSockets\SimpleWebSockets\bin\Debug\SimpleWebSockets.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SimpleWebSockets, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Visual Studio 2015\Projects\SimpleWebSockets\SimpleWebSockets\bin\Debug\SimpleWebSockets.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

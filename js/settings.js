@@ -1,5 +1,5 @@
 
-sessionStorage.finishedReceiving = false;
+
 
 function showSettings(){
 
@@ -14,7 +14,7 @@ function connectManually(){
 	startComWithDB(ip, connectSucces, doneReceiving,  connectError);
 	sessionStorage.Connected == "pending";
 	Materialize.toast('Trying to connected to ' + ip, 4000);	
-	showHome();
+	window.location.href= "#home";
 }
 
 function refreshServerList(){
@@ -39,7 +39,7 @@ function refreshServerList(){
 
 function onSettingsLoad(){
 
-	    	$('#loaderServers').hide();
+	$('#loaderServers').hide();
 	if(sessionStorage.Connected == "false" ){
 		connectToServer();
 	} else {
@@ -56,6 +56,8 @@ function connectToServer(ip){
 			sessionStorage.Connected == "pending";
 			Materialize.toast('Trying to connect to ' + ipdata.ip, 4000);	
 
+	
+			window.location.href= "#home";
 
 		} else {
 			refreshServerList();
@@ -66,6 +68,9 @@ function connectToServer(ip){
 		startComWithDB(ip, connectSucces, doneReceiving,  connectError);
 		sessionStorage.Connected == "pending";
 		Materialize.toast('Trying to connect to ' + ip, 4000);	
+
+	
+		window.location.href= "#home";
 	}
 	
 }
@@ -83,18 +88,14 @@ function connectSucces(){
 
 		Materialize.toast('Succesfully received data from: ' + ipdata.ip, 4000);	
 	}
-	
-	window.location.href= "#home";
 
 }
 
 function doneReceiving(){
 	console.log("FINISHED RECEIVING :D");
-	sessionStorage.finishedReceiving = "true";
 }
 
 function connectError(){
-	sessionStorage.Connected = false;
 	var ipdata = JSON.parse(localStorage.getItem("ServerIP"));
 	if(ipdata.succes){
 		localStorage.removeItem("ServerIP");
