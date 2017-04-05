@@ -56,8 +56,9 @@ function connectToServer(ip){
 			sessionStorage.Connected == "pending";
 			Materialize.toast('Trying to connect to ' + ipdata.ip, 4000);	
 
-	
+		
 			window.location.href= "#home";
+			showHome();
 
 		} else {
 			refreshServerList();
@@ -71,6 +72,7 @@ function connectToServer(ip){
 
 	
 		window.location.href= "#home";
+		showHome();
 	}
 	
 }
