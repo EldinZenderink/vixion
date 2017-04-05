@@ -76,8 +76,6 @@ function connectToServer(ip){
 }
 
 function connectSucces(){
-	console.log("CONNECTED YUS!");
-	console.log(localStorage.getItem("ServerIP"));
 	if(sessionStorage.Connected == "false"){
 		sessionStorage.Connected = true;
 		var ipdata = JSON.parse(localStorage.getItem("ServerIP"));
@@ -92,7 +90,6 @@ function connectSucces(){
 }
 
 function doneReceiving(){
-	console.log("FINISHED RECEIVING :D");
 }
 
 function connectError(){

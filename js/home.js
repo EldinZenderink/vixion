@@ -8,9 +8,6 @@ function showHome(){
 	clearInterval(waitingForDataInterval);
 	$("#screen").html(' ');	
 	$("#screen").load("home.html"); 
-	
-	$("#loadingText").hide();
-
 }
 
 
@@ -172,6 +169,21 @@ function checkForData(){
 			
 		}
 	}, 100);
+
+	setInterval(function(){
+
+		if(sessionStorage.cannotConnect == "true"){
+			$('#noconnection').show();
+			$("#loader").hide();
+			$("#loaderBar").hide();
+			$("#percentageFinished").hide();
+		} else {
+			$("#loader").show();
+			$("#loaderBar").show();
+			$("#percentageFinished").show();
+			$('#noconnection').hide();
+		}
+	}, 500);
 
 
 }

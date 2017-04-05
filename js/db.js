@@ -2,6 +2,7 @@ var movies = [];
 var series = [];
 
 var alreadyParsed = [];
+var callbackTrailersReceived = null;
 
 var socket;
 function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, callbackOnConnectError){
@@ -9,8 +10,8 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 	socket = new WebSocket("ws://" + ip + ":4655");
 	movies = [];
 	series = [];
+	sessionStorage.cannotConnect = false;
 	socket.onopen = function(){
-		console.log("Succesfully connected to websocket :D");
 
 		Materialize.toast('Succesfully connected to: ' + ip + ", waiting for data." , 4000);	
 		sessionStorage.parsedFiles = "0";
@@ -20,6 +21,7 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 		sessionStorage.parsing = false;
 		sessionStorage.receiving = false;
 		sessionStorage.finishedReceiving = false;
+		sessionStorage.cannotConnect = false;
 
 		getDataFromDB();
 	}
@@ -46,7 +48,12 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 		}
 
 		if(msg.data.indexOf("SEND") > -1){
-			sessionStorage.totalSend = msg.data.split(':')[1].trim();
+			try{
+				sessionStorage.totalSend = msg.data.split(':')[1].trim();
+			} catch (e){
+				sessionStorage.totalSend = msg.data.split(':')[1];
+			}
+			
 		}
 
 		if(msg.data == "DONEPARSING"){
@@ -58,19 +65,34 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 			sessionStorage.finishedReceiving = true;
 			callbackOnDoneReceiving();
 		}
+
+		if(msg.data.indexOf("TRAILERS:") > -1){
+			try{
+
+				callbackTrailersReceived(msg.data);
+			} catch(E){
+
+			}
+		}
 		callbackOnConnectSucces();
 
 	}
 
 	socket.onclose = function(res){
+		socket = new WebSocket("ws://" + ip + ":4655");
 		console.log("Close WS : ");
 		console.log(res.reason);
+		Materialize.toast('Disconnected from: ' + ip , 4000);	
+
+		sessionStorage.cannotConnect = true;
 		sessionStorage.Connected = false;
 		callbackOnConnectError();
 	}
 	socket.onerror = function(err){
+		Materialize.toast('Cannot reach: ' + ip + ', are your sure your server is running?', 4000);
 		console.log("Error WS : ");
 		console.log(err);
+		sessionStorage.cannotConnect = true;
 		sessionStorage.Connected = false;
 		callbackOnConnectError();
 	}
@@ -81,6 +103,11 @@ function getDataFromDB(){
 	socket.send("getFiles");
 }
 
+function getTrailers(title, callback){
+	socket.send("GetYoutubeTrailer:" + title);
+	callbackTrailersReceived= callback;
+}
+ 
 function parseData(files){
  	var info = files.info;
  	if(info.Type == "series"){

@@ -5,7 +5,6 @@
     connectToServer();
     showHome();
 	$('.modal').modal();
-	console.log(navigator.sayswho.toLowerCase().indexOf("chrome"));
     if(navigator.sayswho.toLowerCase().indexOf("chrome") == -1 && navigator.sayswho.toLowerCase().indexOf("firefox") == -1){
     	$('#WrongBrowser').modal('open');
     }

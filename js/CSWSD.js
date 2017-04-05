@@ -45,7 +45,6 @@ function webSocketRequest(ip, port){
 
 
 function actuallyDetectWSServers(baseIp){
-	console.log("Found your local ip: " + baseIp);
 
 	if(!isRunning){
 		var ipToGoThrough = 1; 
@@ -117,7 +116,6 @@ function getLocalIp (callback){
 				}
 				baseIp = baseIp.substr(0, baseIp.length - 1);
 				localIpReturned = true;
-				console.log("found ip: "+ ip);
 				callback(baseIp);
 	        }
 	    };
@@ -159,7 +157,6 @@ function webSocketRequest(ip, port){
 		type: "WS"
 	}
 	ws.onopen = function(data){
-		console.log("found connection at: " + ip);
 		serverInfo.ip = ip;
 		serverInfo.port = port;
 		serverInfo.data = data;

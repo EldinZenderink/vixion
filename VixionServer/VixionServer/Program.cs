@@ -88,6 +88,7 @@ namespace VixionServer
             JArray jsonParse = null;
             if (File.Exists("filesparsed.json"))
             {
+                Console.WriteLine("Files already parsed! Sending over JSON");
                 using (StreamReader file = new StreamReader("filesparsed.json"))
                 {
 
@@ -105,6 +106,7 @@ namespace VixionServer
                         ws.SendGlobalMessage(jsonParse[i].ToString());
                         ws.SendGlobalMessage("SEND: " + i);
                     }
+                    Console.WriteLine("Finished sending data over to client!");
                     ws.SendGlobalMessage("DONESENDING");
                 }
             } else
@@ -203,7 +205,7 @@ namespace VixionServer
                         b++;
                     }
                     FullJson = FullJson.Remove(FullJson.Length - 1) + "]";
-
+                    Console.WriteLine("Finished sending data over to client!");
                     ws.SendGlobalMessage("DONESENDING");
                     using (StreamWriter file = new StreamWriter("filesparsed.json"))
                     {
@@ -213,7 +215,8 @@ namespace VixionServer
                 }
                 else if (jsonParse != null)
                 {
-                    Console.WriteLine("Files already parsed!");
+
+                    Console.WriteLine("Files already parsed! Sending over JSON");
                     ws.SendGlobalMessage("FILES: " + jsonParse.Count());
                     ws.SendGlobalMessage("DONEPARSING");
                     ws.SendGlobalMessage("FOUND: " + jsonParse.Count());
@@ -222,6 +225,7 @@ namespace VixionServer
                         ws.SendGlobalMessage(jsonParse[i].ToString());
                         ws.SendGlobalMessage("SEND: " + i);
                     }
+                    Console.WriteLine("Finished sending data over to client!");
                     ws.SendGlobalMessage("DONESENDING");
                 }
                 else if (jsonParse == null && dicWithFiles.Count() > 0)
@@ -241,6 +245,7 @@ namespace VixionServer
                         i++;
                     }
                     FullJson = FullJson.Remove(FullJson.Length - 1) + "]";
+                    Console.WriteLine("Finished sending data over to client!");
                     ws.SendGlobalMessage("DONESENDING");
                     using (StreamWriter file = new StreamWriter("filesparsed.json"))
                     {
@@ -345,6 +350,36 @@ namespace VixionServer
 
         }
 
+        static string GetTrailersFromYoutubeData(string input)
+        {
+            Dictionary<string, string> trailers = new Dictionary<string, string>();
+
+            string[] parts = input.Split(new string[] { "yt-lockup-title" }, StringSplitOptions.None);
+            foreach(string part in parts)
+            {
+
+                if (part.Contains("href="))
+                {
+                    string[] subparts = part.Split(new string[] { "href=" }, StringSplitOptions.None);
+                    string url = subparts[1].Substring(3).Split('"')[0].Replace('\\', ' ').Replace("watch?v=", "embed/");
+                    if (part.Contains("title=") )
+                    {
+                        subparts = part.Split(new string[] { "title=" }, StringSplitOptions.None);
+                        string title = subparts[1].Substring(2).Split('"')[0].Replace('\\', ' '); 
+                        if (title.ToLower().Contains("trailer"))
+                        {
+                            trailers.Add(title, url);
+                            break;
+                        }
+                    }
+
+                }
+
+            }
+            string json = JsonConvert.SerializeObject(trailers, Formatting.Indented);
+            return json;
+        }
+
         /// <summary>
         /// Event for when data is received over websockets.
         /// </summary>
@@ -365,6 +400,25 @@ namespace VixionServer
                 scanDirs = new Thread(new ThreadStart(UpdateFileDic));
                 scanDirs.Start();
                 
+            } else if (msg.Contains("GetYoutubeTrailer:"))
+            {
+                string search = msg.Replace("GetYoutubeTrailer:", "").Trim();
+
+                try
+                {
+                    using (WebClient client = new WebClient())
+                    {               
+                        Console.WriteLine("Requested trailer for: " + search);        
+                        string data = client.DownloadString("https://www.youtube.com/results?search_query=" + search.Replace(' ', '+') + "+trailer&spf=navigate");
+                        string json = GetTrailersFromYoutubeData(data);
+                        ws.SendGlobalMessage("TRAILERS: " + json);
+                    }
+                }
+                catch
+                {
+                    ws.SendGlobalMessage("ERROR WHILE PARSING URL");
+                }
+
             }
 
         }

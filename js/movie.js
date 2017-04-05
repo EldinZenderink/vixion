@@ -20,7 +20,6 @@ function onMovieLoad(){
 	$('#awards').html('<h6><b>Awards: </b></h6>' +info.info.Awards);
 
 	$.each(info.files, function(key, val){
-		console.log(val);
 		if(val.indexOf('/') < 0){			
 			$('#files').append('<div class="row"><button onclick="copyTextToClipboard(\'' + encodeURI(val) + '\')" style="width: 100%;" class="waves-effect waves-light btn jewel" href="">' + val.split('\\')[val.split('\\').length - 1] + '</button></div>');
 		} else {
@@ -43,6 +42,15 @@ function onMovieLoad(){
 			$('#files-mob').append('<div class="row"><a style="width: 100%;" href="' + val + '" class="waves-effect waves-light btn jewel" href="">' + val.split('/')[val.split('/').length - 1] + '</a></div>');
 		}
 	})
+
+  function ParseYoutubeSearchResults(data){
+    console.log("RECEIVED DATA FROM YOUTUBE:" + data.replace("TRAILERS: ", ""));
+    var trailers = JSON.parse(data.replace("TRAILERS: ", ""));
+    console.log(Object.values(trailers)[0]);
+     $('#trailer').html('<h6><b>Trailer:</b></h6><br /><div id="trailer"><iframe style="width: 100%; min-height: 360px;" src="https://www.youtube.com/' + Object.values(trailers)[0] + '" frameborder="0" allowfullscreen></iframe></div>');
+     $('#trailer-mob').html('<h6><b>Trailer:</b></h6><br /><div id="trailer"><iframe style="width: 100%; min-height: 180px;" src="https://www.youtube.com/' + Object.values(trailers)[0] + '" frameborder="0" allowfullscreen></iframe></div>');
+  }
+  getTrailers(info.info.Title, ParseYoutubeSearchResults);
 
 
 }

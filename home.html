@@ -19,13 +19,13 @@
 
 	  	<center> 
 			
-			<div class="progress fuschia" style="width: 75%; height: 3rem;">
+			<div class="progress fuschia" style="width: 75%; height: 3rem; z-index: 0;">
 						
-				<div class="determinate jewel" id="loaderBar" style="width: 0%; height: 3rem;">
-				</div>
 				<center> 
-					<h5 id="percentageFinished" style="z-index: 100;">0%</h5>
+					<h5 id="percentageFinished" style="z-index: 100; ">0%</h5>
 				</center>
+				<div class="determinate jewel"  id="loaderBar" style="z-index: -10;width: 0%; height: 3rem;">
+				</div>
 			</div>
 			<br />
 	  		<h4 id="loadingText">Hello</h4>
@@ -33,6 +33,10 @@
 
 </div>
 
+<div class="section" id="noconnection">
+<center> <h4>Apparently your selected server is not running! <br /> Make sure you start the server before connecting to it!</h4><br /> <h5>Reload this page once you have the server running.</h5></center>
+</div>
+	
 
 <div class="container" id="movies">
 	 <div class="row">
@@ -86,5 +90,11 @@
     
 	$("#movies").hide();
 	$("#series").hide();
+
+	$('#noconnection').hide();	
+	$("#loadingText").hide();
+	$("#loaderBar").hide();
+	$("#percentageFinished").hide();
+	$("#loader").hide();
   });
 </script>
