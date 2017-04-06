@@ -12,6 +12,17 @@ Vixion is a media indexation software. It indexes all your video files depending
 ** Parsed from IMDB
 *** (Due to desktop browsers having a safety regulation preventing opening third party media players, the link to the file will be copied to your clipboard when you press on the file link)
 
+# Screenshots - Desktop/Tablet
+[home page](https://i.imgur.com/7MgpDO1.png)
+
+[information page(zoomed out)](https://i.imgur.com/Xa3Q6Ma.png)
+
+# Screenshots - Mobile
+
+[home page](https://i.imgur.com/cosVdIj.png)
+
+[information page](https://i.imgur.com/Gz56lol.png)
+
 # Video Tutorial Installation & Usage
 
 [Installation On Windows (10)](https://www.youtube.com/watch?v=jVJ5YrxVZBM&feature=youtu.be)
