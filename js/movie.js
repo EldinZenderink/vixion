@@ -1,9 +1,11 @@
 var info;
 function showMovie(key){
+  $("#screen").fadeOut(0);
 	console.log("showing movie");
 	$("#screen").html(' ');	
 	$("#screen").load("movie.html"); 
 	info = movies[key];
+  $("#screen").fadeIn(1000);
 }
 
 function onMovieLoad(){

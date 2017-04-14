@@ -2,12 +2,14 @@ var loadingTextInterval;
 var waitingForDataInterval;
 
 function showHome(){
-
-	
+	console.log("showing home");
+	$("#screen").fadeOut(0);
 	clearInterval(loadingTextInterval);
 	clearInterval(waitingForDataInterval);
 	$("#screen").html(' ');	
-	$("#screen").load("home.html"); 
+	$("#screen").load("home.html");
+	$("#screen").css({"visibility":"visible"}); 
+	$("#screen").fadeIn(1000);
 }
 
 
@@ -59,22 +61,22 @@ function checkForData(){
 			  		if(imageUrl.indexOf("N/A") > -1){
 			  			imageUrl = "/img/cover.png";
 			  			var desk = '<a href="#serie_' + index + '">\
-			  						<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " onclick="showSerie(\'' + index + '\')">\
+			  						<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " >\
 					                <img src="' + imageUrl + '" class="posterImage"/>\
 				                    <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\
 				              		</div>\
 				              		</a>'; 
-				    	var mob = '<a href="#serie_' + index + '"><div id="' + index + '" class="row valign-wrapper " onclick="showSerie(\'' + index + '\')"><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div></a>';
+				    	var mob = '<a href="#serie_' + index + '"><div id="' + index + '" class="row valign-wrapper " ><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div></a>';
 			  			noCoverMob = noCoverMob + mob;
 			  			noCoverDesk = noCoverDesk + desk;
 			  		} else {
 			  			var desk = '<a href="#serie_' + index + '">\
-			  						<div href="#serie_' + index + '"id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " onclick="showSerie(\'' + index + '\')">\
+			  						<div href="#serie_' + index + '"id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light ">\
 					                <img src="' + imageUrl + '" class="posterImage"/>\
 				                    <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\
 				              		</div>\
 				              		</a>'; 
-				    	var mob = '<a href="#serie_' + index + '"><div href="#serie_' + index + '" id="' + index +'" class="row valign-wrapper " onclick="showSerie(\'' + index + '\')"><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div></a>';
+				    	var mob = '<a href="#serie_' + index + '"><div href="#serie_' + index + '" id="' + index +'" class="row valign-wrapper " ><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div></a>';
 			  			htmlCodeDesk = htmlCodeDesk + desk;
 				    	htmlCodeMob = htmlCodeMob + mob;
 			  		}
@@ -99,7 +101,7 @@ function checkForData(){
 				  		if(imageUrl.indexOf("N/A") > -1){
 				  			imageUrl = "/img/cover.png";
 				  			var desk = '<a href="#movie_' + index + '">\
-				  						<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " onclick="showMovie(\'' + index + '\')">\
+				  						<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " >\
 						                <img src="' + imageUrl + '" class="posterImage"/>\
 					                    <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\
 					              		</div>\
@@ -108,7 +110,7 @@ function checkForData(){
 				  			noCoverMob = noCoverMob + mob;
 				  			noCoverDesk = noCoverDesk + desk;
 				  		} else {
-				  			var desk = '<a href="#movie_' + index + '"> <div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " onclick="showMovie(\'' + index + '\')">\
+				  			var desk = '<a href="#movie_' + index + '"> <div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " >\
 						                <img src="' + imageUrl + '" class="posterImage"/>\
 					                    <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\
 					              	</div></a>'; 

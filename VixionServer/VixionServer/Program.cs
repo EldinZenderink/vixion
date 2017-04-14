@@ -19,6 +19,7 @@ namespace VixionServer
         private static IMDBFileNameParser parser;
         private static ConcurrentDictionary<string, DataContainer> dicWithFiles;
         private static Thread scanDirs = null;
+        private static string dirToScan = "";
         private static int currentAmountOfFilesParsed = 0;
         private static int port = 4444;
 
@@ -36,14 +37,68 @@ namespace VixionServer
             Console.WriteLine("To be sure that you select the correct server, click on the button that says: " + GetLocalIPAddress());
             Console.WriteLine("Thank you for using Vixion, I hope you enjoy using it :D");
 
-            List<string> DirsInPath = new List<string>();
-            if (Directory.GetCurrentDirectory().Contains("/"))
+            
+
+            if (File.Exists("config.ini"))
             {
-                DirsInPath.AddRange(Directory.GetCurrentDirectory().Split('/'));
+                string[] configData = File.ReadAllLines("config.ini");
+
+                foreach(string config in configData)
+                {
+                    Console.WriteLine("ConfigData: " + config);
+                    if (config.Contains("customDir = "))
+                    {
+                        string customDir = config.Split(new string[] { "customDir = " }, StringSplitOptions.None)[1];
+
+                        if (Directory.Exists(customDir))
+                        {
+                            if (customDir.Contains('/'))
+                            {
+                                if(customDir[customDir.Length - 1] != '/')
+                                {
+                                    customDir = customDir + '/';
+                                }
+                            } else if (customDir.Contains('\\'))
+                            {
+                                if (customDir[customDir.Length - 1] != '\\')
+                                {
+                                    customDir = customDir + '\\';
+                                }
+                            }
+                            dirToScan = customDir;
+                        } else
+                        {
+                            dirToScan = Directory.GetCurrentDirectory();
+                        }
+                    } else
+                    {
+                        dirToScan = Directory.GetCurrentDirectory();
+                        using (StreamWriter file = new StreamWriter("config.ini"))
+                        {
+                            file.WriteLine("customDir = " + dirToScan + Environment.NewLine);
+                        }
+                    }
+                }
+            } else
+            {
+                
+                dirToScan = Directory.GetCurrentDirectory();
+                using (StreamWriter file = new StreamWriter("config.ini"))
+                {
+                    file.Write("customDir = " + dirToScan + Environment.NewLine);
+                }
+            }
+
+            Console.WriteLine("Directory that will be scanned: " + dirToScan);
+
+            List<string> DirsInPath = new List<string>();
+            if (dirToScan.Contains("/"))
+            {
+                DirsInPath.AddRange(dirToScan.Split('/'));
             }
             else
             {
-                DirsInPath.AddRange(Directory.GetCurrentDirectory().Split('\\'));
+                DirsInPath.AddRange(dirToScan.Split('\\'));
             }
 
             if (File.Exists("exclude.txt"))
@@ -60,11 +115,12 @@ namespace VixionServer
             }
             else
             {
-                parser = new IMDBFileNameParser(DirsInPath[DirsInPath.Count - 1]);
+                parser = new IMDBFileNameParser(DirsInPath[DirsInPath.Count - 1], DirsInPath);
             }
 
             http = new HttpServer(port);
             http.SetWebHomeDir(Directory.GetCurrentDirectory() + @"\GUI");
+            http.SetFileDir(dirToScan);
             http.Start();
 
             ws = new WebSocketServer(4655);
@@ -86,10 +142,10 @@ namespace VixionServer
 
             int amountOfMoviesAndSeriesAlreadyParsed = 0;
             JArray jsonParse = null;
-            if (File.Exists("filesparsed.json"))
+            if (File.Exists(dirToScan + "filesparsed.json"))
             {
                 Console.WriteLine("Files already parsed! Sending over JSON");
-                using (StreamReader file = new StreamReader("filesparsed.json"))
+                using (StreamReader file = new StreamReader(dirToScan + "filesparsed.json"))
                 {
 
                     string json = file.ReadToEnd();
@@ -114,7 +170,7 @@ namespace VixionServer
                 Console.WriteLine("Did not find previous filesparsed json file!");
             }
 
-            IEnumerable<string> allfiles = GetFiles(Directory.GetCurrentDirectory());
+            IEnumerable<string> allfiles = GetFiles(dirToScan);
             int totalAmountOfFiles = allfiles.Count() - 1;
 
             if(totalAmountOfFiles != amountOfMoviesAndSeriesAlreadyParsed)
@@ -122,6 +178,7 @@ namespace VixionServer
                 if (totalAmountOfFiles != currentAmountOfFilesParsed)
                 {
                     Console.WriteLine("Updating File Dictionary!");
+                    dicWithFiles = new ConcurrentDictionary<string, DataContainer>();
                     ws.SendGlobalMessage("FILES: " + totalAmountOfFiles);
                     List<string> files = new List<string>();
                     int i = 0;
@@ -132,7 +189,9 @@ namespace VixionServer
                     foreach (var file in allfiles)
                     {
 
-                        string filetobeparsed = ((string)file).Replace(Directory.GetCurrentDirectory(), "");
+                        Console.WriteLine("Parsing file: " + file);
+
+                        string filetobeparsed = ((string)file).Replace(dirToScan, "");
                         if (isMediaFile(filetobeparsed))
                         {
                             ws.SendGlobalMessage("PARSED: " + i);
@@ -155,7 +214,16 @@ namespace VixionServer
                             }
 
 
-                            string urlToFile = ((string)file).Replace(Directory.GetCurrentDirectory(), "http://" + GetLocalIPAddress() + ":" + port).Replace(@"\", "/");
+                            string toReplaceWith = ("http://" + GetLocalIPAddress() + ":" + port).Replace(@"\", "/");
+
+
+                            if (toReplaceWith[toReplaceWith.Length - 1] != '/')
+                            {
+                                toReplaceWith = toReplaceWith + '/';
+                            }
+
+                            string urlToFile = ((string)file).Replace(dirToScan, toReplaceWith);
+                            
 
                             if (imdbId != null && imdbId != "FALSE")
                             {
@@ -207,7 +275,7 @@ namespace VixionServer
                     FullJson = FullJson.Remove(FullJson.Length - 1) + "]";
                     Console.WriteLine("Finished sending data over to client!");
                     ws.SendGlobalMessage("DONESENDING");
-                    using (StreamWriter file = new StreamWriter("filesparsed.json"))
+                    using (StreamWriter file = new StreamWriter(dirToScan + "filesparsed.json"))
                     {
                         file.WriteLine(FullJson);
                     }
@@ -247,7 +315,7 @@ namespace VixionServer
                     FullJson = FullJson.Remove(FullJson.Length - 1) + "]";
                     Console.WriteLine("Finished sending data over to client!");
                     ws.SendGlobalMessage("DONESENDING");
-                    using (StreamWriter file = new StreamWriter("filesparsed.json"))
+                    using (StreamWriter file = new StreamWriter(dirToScan + "filesparsed.json"))
                     {
                         file.WriteLine(FullJson);
                     }
@@ -327,7 +395,7 @@ namespace VixionServer
 
                 try
                 {
-                    if (Array.IndexOf(extensions, Path.GetExtension(fileName)) > -1)
+                    if (Array.IndexOf(extensions, Path.GetExtension(fileName.ToLower())) > -1)
                     {
                         ismedia = true;
                     }
@@ -419,6 +487,99 @@ namespace VixionServer
                     ws.SendGlobalMessage("ERROR WHILE PARSING URL");
                 }
 
+            } else if (msg.Contains("SetDir:"))
+            {
+                try
+                {
+                    string dirToSet = msg.Split(new string[] { "SetDir:" }, StringSplitOptions.None)[1];
+
+
+
+                    if (Directory.Exists(dirToSet))
+                    {
+
+                        if (dirToSet.Contains('/'))
+                        {
+                            if (dirToSet[dirToSet.Length - 1] != '/')
+                            {
+                                dirToSet = dirToSet + '/';
+                            }
+                        }
+                        else if (dirToSet.Contains('\\'))
+                        {
+                            if (dirToSet[dirToSet.Length - 1] != '\\')
+                            {
+                                dirToSet = dirToSet + '\\';
+                            }
+                        }
+
+                        dirToScan = dirToSet;
+                        http.SetFileDir(dirToScan);
+
+                        if (File.Exists("config.ini"))
+                        {
+                            string[] lines = File.ReadAllLines("config.ini");
+                            string newConfig = "";
+
+                            foreach (string config in lines)
+                            {
+                                Console.WriteLine("ConfigData: " + config);
+                                if (config.Contains("customDir = "))
+                                {
+                                    newConfig = newConfig + Environment.NewLine + "customDir = " + dirToScan;
+                                } else
+                                {
+                                    newConfig = newConfig + Environment.NewLine + config;
+                                }
+                            }
+
+                            using (StreamWriter file = new StreamWriter("config.ini"))
+                            {
+                                file.Write(newConfig);
+                            }
+                        }
+
+                        List<string> DirsInPath = new List<string>();
+                        if (dirToScan.Contains("/"))
+                        {
+                            DirsInPath.AddRange(dirToScan.Split('/'));
+                        }
+                        else
+                        {
+                            DirsInPath.AddRange(dirToScan.Split('\\'));
+                        }
+                        if (File.Exists("exclude.txt"))
+                        {
+                            string[] excluded = File.ReadAllLines("exclude.txt");
+                            List<string> toExclude = new List<string>(excluded);
+                            toExclude.AddRange(DirsInPath);
+                            parser = new IMDBFileNameParser(DirsInPath[DirsInPath.Count - 1], toExclude);
+                            Console.WriteLine("If a directory or filename contains one of these values, it will be ignored:");
+                            foreach (string toBeExcluded in toExclude)
+                            {
+                                Console.WriteLine(toBeExcluded);
+                            }
+
+                        }
+                        else
+                        {
+                            parser = new IMDBFileNameParser(DirsInPath[DirsInPath.Count - 1], DirsInPath);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Directory does not exists :(: " + dirToSet);
+                        ws.SendGlobalMessage("ERROR (DIRECTORY DOES NOT EXISTS) WHILE SETTING DIRECTORY: " + dirToSet);
+                    }
+
+                } catch
+                {
+                    Console.WriteLine("Trying to set a dir, but you probably made an error sending that message :X");
+                    ws.SendGlobalMessage("ERROR (SYNTAX) WHILE SETTING DIRECTORY");
+                }
+            } else if (msg.Contains("GetDir"))
+            {
+                ws.SendGlobalMessage("DIR:" + dirToScan);
             }
 
         }

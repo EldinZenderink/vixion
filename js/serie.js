@@ -1,7 +1,9 @@
 var info;
 function showSerie(key){
+  $("#screen").fadeOut(0);
 	$("#screen").html(' ');	
 	$("#screen").load("serie.html"); 
+  $("#screen").fadeIn(1000);
 	info = series[key];
 }
 

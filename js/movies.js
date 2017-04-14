@@ -1,8 +1,8 @@
 function showMovies(){
-	console.log("showing movies");
+	$("#screen").fadeOut(0);
 	$("#screen").html(' ');	
 	$("#screen").load("movies.html");
-
+	$("#screen").fadeIn(1000);
 	//$('#posters-mob').html(htmlCodeMob);
 
 	
@@ -22,12 +22,12 @@ function parseMovies(){
 		  		if(imageUrl.indexOf("N/A") > -1){
 		  			imageUrl = "/img/cover.png";
 		  			var desk = '<a href="#movie_' + index + '">\
-		  						<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light " onclick="showMovie(\'' + index + '\')">\
+		  						<div id="' + val.info.imdbID +'" class="posterMain waves-effect waves-light ">\
 				                <img src="' + imageUrl + '" class="posterImage"/>\
 			                    <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\
 			              		</div>\
 			              		</a>'; 
-			    	var mob = '<a href="#movie_' + index + '"><div id="' + index +'" class="row valign-wrapper " onclick="showMovie(\'' + index + '\')"><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div></a>';
+			    	var mob = '<a href="#movie_' + index + '"><div id="' + index +'" class="row valign-wrapper " ><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div></a>';
 		  			noCoverMob = noCoverMob + mob;
 		  			noCoverDesk = noCoverDesk + desk;
 		  		} else {
@@ -35,7 +35,7 @@ function parseMovies(){
 				                <img src="' + imageUrl + '" class="posterImage"/>\
 			                    <div class="posterTitle"><span class="posterTitleText">' + val.info.Title + '</span></div>\
 			              	</div></a>'; 
-			    	var mob = '<a href="#movie_' + index + '"><div id="' + index +'" class="row valign-wrapper " onclick="showMovie(\'' + index + '\')"><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div></a>';
+			    	var mob = '<a href="#movie_' + index + '"><div id="' + index +'" class="row valign-wrapper " ><div class="col s5"><img class="posterImageMob" src="' + imageUrl + '"/></div><div class="col s7"><span class="valign center-align"><b>' + val.info.Title + '</b></span></div></div></a>';
 		  			htmlCodeDesk = htmlCodeDesk + desk;
 			    	htmlCodeMob = htmlCodeMob + mob;
 		  		}

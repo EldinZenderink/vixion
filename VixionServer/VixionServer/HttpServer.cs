@@ -113,16 +113,18 @@ namespace VixionServer
                     if (dataRead.Contains("GET"))
                     {
                         string fileName = Uri.UnescapeDataString(dataRead.Split(new string[] { "GET" }, StringSplitOptions.None)[1].Split(new string[] { "HTTP" }, StringSplitOptions.None)[0].Trim());
-                        Console.WriteLine("FILE REQ: " + fileName);
+                        Console.WriteLine("FILE REQ: " + fileDir + fileName);
                         StringBuilder response = new StringBuilder();
 
                         if (IsMediaFile(fileName))
                         {
+                            Console.WriteLine("Is mediafile");
                             try
                             {
 
                                 using (FileStream fs = File.OpenRead(fileDir + fileName))
                                 {
+                                    
                                     string filename = Path.GetFileName(fileDir + fileName);
                                     //response is HttpListenerContext.Response...
                                     response.Append("HTTP/1.1 200 OK \r\n");
@@ -157,10 +159,10 @@ namespace VixionServer
                                 }
 
                             }
-                            catch
+                            catch(Exception e)
                             {
                                 response.Append("HTTP/1.1 404 Not Found \r\n");
-
+                                Console.WriteLine("Failed to write file to stream: " + e.ToString());
                                 byte[] header = Encoding.ASCII.GetBytes(response.ToString());
                                 strm.Write(header, 0, header.Length);
                                 strm.Flush();
@@ -343,7 +345,7 @@ namespace VixionServer
         public bool IsMediaFile(string filename)
         {
             string[] fileExtensions = new string[] { ".mkv", ".mp4", ".avi", ".flak", ".mp3", ".aac", ".exe", ".tar", ".aaf", ".3gp", ".asf", ".avchd", ".avi", ".bik", ".dat", ".flv", ".mpeg", ".m4v", ".mkv", ".mp4", ".mts", ".wmv", ".vp9", ".vp8", ".webm" };
-            string extension = Path.GetExtension(filename);
+            string extension = Path.GetExtension(filename.ToLower());
 
             int inArray = Array.IndexOf(fileExtensions, extension);
             if (inArray > -1)

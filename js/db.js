@@ -5,7 +5,7 @@ var alreadyParsed = [];
 var callbackTrailersReceived = null;
 
 var socket;
-function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, callbackOnConnectError){
+function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, callbackOnConnectError, callbackOnDirReceived){
 	Materialize.toast('Initiating connection to: ' + ip + ", waiting for connection." , 4000);
 	socket = new WebSocket("ws://" + ip + ":4655");
 	movies = [];
@@ -22,17 +22,32 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 		sessionStorage.receiving = false;
 		sessionStorage.finishedReceiving = false;
 		sessionStorage.cannotConnect = false;
+		sessionStorage.dir = "";
+		getDirFromDB();
+		setTimeout(function(){ getDataFromDB() }, 500);
 
-		getDataFromDB();
 	}
 	socket.onmessage = function(msg){
 		sessionStorage.Connected = true;
+		console.log(msg.data);
 		try{
 			parseData(JSON.parse(msg.data));
 		} catch(err){
 			
 		}
+
+		if(msg.data.indexOf("DIR:") > -1){
+			var splitter =  msg.data.split(':');
+			var txt = "";
+			for(var x = 1; x < splitter.length;  x++){
+				txt = txt + splitter[x];
+			}
+			sessionStorage.dir = txt;
+			callbackOnDirReceived(txt);
+		}
+
 		if(msg.data.indexOf("FILES") > -1){
+
 			sessionStorage.totalFiles = msg.data.split(':')[1].trim();
 			sessionStorage.parsedFiles = "0";
 			sessionStorage.parsing = true;
@@ -100,7 +115,21 @@ function startComWithDB(ip, callbackOnConnectSucces, callbackOnDoneReceiving, ca
 }
 
 function getDataFromDB(){
+
+	series = [];
+	movies = [];
+	sessionStorage.finishedReceiving == "true";
 	socket.send("getFiles");
+}
+
+function getDirFromDB(){
+	socket.send("GetDir");
+}
+
+function setDir(dir){
+	socket.send("SetDir:" + dir);
+	
+	setTimeout(function(){socket.send("getFiles");}, 500);
 }
 
 function getTrailers(title, callback){

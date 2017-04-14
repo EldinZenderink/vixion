@@ -1,8 +1,8 @@
 function showUnknown(){
-
+	$("#screen").fadeOut(0);
 	$("#screen").html(' ');	
 	$("#screen").load("unknown.html"); 
-
+	$("#screen").fadeIn(1000);
 }
 
 function onUnknownLoad(){

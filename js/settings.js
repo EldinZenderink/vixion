@@ -2,19 +2,32 @@
 
 
 function showSettings(){
-
+	console.log("showing settings");
+	$("#screen").fadeOut(0);
 	$("#screen").html(' ');	
 	$("#screen").load("settings.html"); 
+	$("#screen").fadeIn(1000);
 
 }
 
 function connectManually(){
 	var ip = $('#server_ip').val();
 	localStorage.setItem("ServerIP", '{ "ip" : "' + ip + '", "succes" : false}');
-	startComWithDB(ip, connectSucces, doneReceiving,  connectError);
+	startComWithDB(ip, connectSucces, doneReceiving,  connectError, getDirectory);
 	sessionStorage.Connected == "pending";
 	Materialize.toast('Trying to connected to ' + ip, 4000);	
 	window.location.href= "#home";
+}
+
+function setDirectory(){
+	var dir = $('#scanDir').val();
+	setDir(dir);
+	Materialize.toast('Trying to set directory: ' + dir, 4000);	
+	window.location.href= "#home";
+}
+
+function getDirectory(dir){
+	$('#scanDir').val(dir);
 }
 
 function refreshServerList(){
@@ -46,13 +59,14 @@ function onSettingsLoad(){
 		var ipdata = JSON.parse(localStorage.getItem("ServerIP"));
 		$('#connectedserver').append('<div class="col s12 row"><button href="#home" class="btn jewel waves-effect waves-light " style="width: 100%;">' + ipdata.ip + '</button></div>');
 	}
+	$('#scanDir').val(sessionStorage.dir);
 }
 
 function connectToServer(ip){
 	if(ip === undefined){
 		var ipdata = JSON.parse(localStorage.getItem("ServerIP"));
 		if(sessionStorage.Connected == "false" && ipdata != null){
-			startComWithDB(ipdata.ip, connectSucces, doneReceiving, connectError);
+			startComWithDB(ipdata.ip, connectSucces, doneReceiving, connectError, getDirectory);
 			sessionStorage.Connected == "pending";
 			Materialize.toast('Trying to connect to ' + ipdata.ip, 4000);	
 
@@ -66,7 +80,7 @@ function connectToServer(ip){
 	} else {
 
 		localStorage.setItem("ServerIP", '{ "ip" : "' + ip + '", "succes" : false}');
-		startComWithDB(ip, connectSucces, doneReceiving,  connectError);
+		startComWithDB(ip, connectSucces, doneReceiving,  connectError, getDirectory);
 		sessionStorage.Connected == "pending";
 		Materialize.toast('Trying to connect to ' + ip, 4000);	
 

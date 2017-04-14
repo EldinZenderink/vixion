@@ -52,6 +52,19 @@
         <button href="#home" class="btn waves-effect waves-light jewel" style="width: 100%; " onclick="connectManually()"> Connect </button>
     </div>
   </div>
+  <hr>
+  <div class="row">
+    <div class="col s12"> 
+      <h4>Set Custom Scan Directory</h4>
+    </div>
+    <div class="col s12">
+        <input id="scanDir" type="text" name="scandir"> </input>
+        <label >Full Directory Path (Example-> Windows: C:\users\users\videos or if networkshare: \\YOURNAS\films, Linux: /home/user/videos)</label>
+    </div>
+    <div class="col s12">
+        <button href="#home" class="btn waves-effect waves-light jewel" style="width: 100%; " onclick="setDirectory()">Set Directory</button>
+    </div>
+  </div>
 </div>
 <script>
  $(document).ready(function() {
