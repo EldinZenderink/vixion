@@ -31,18 +31,12 @@ Vixion is a media indexation software. It indexes all your video files depending
 # New Features sinds previous release!
  *Server:*
 
- - Fully reworked file parsing through IMDB/OMDB (it detects quit a bit more and correct than the previous release).
- - Added support for excluding certain filenames (or directories).
- - Now saves all the parsed files locally as json, meaning the next time you load the interface, it doesn't have to parse all the files again.
- - Improved stability.
+ - Server doesn't need to be put into the directory containing the media files anymore, you can set the directory for scanning on the settings page!
+ - Tiny improvement on scanning for files.
 
  *Interface:*
- - Added progressbar for showing the parsing progress.
- - Make back/previous screen/page work.
- - Added default poster for posters images which didn't load.
- - Improved server detection.
- - Added support for App modus within android (With chrome: go to settings -> add to home screen)
- - Added a quick and dirty logo.
+ - Added transition animations between screens.
+ - Fixed size trailer area (no more jumping pages).
 
 
 ### Tech
